@@ -1,0 +1,90 @@
+<!doctype html>
+<!-- See http://www.firepad.io/docs/ for detailed embedding docs. -->
+<html>
+<head>
+  <meta charset="utf-8" />
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <style>
+    #tooltip {
+      background-color: #333;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body onload="init();">
+1<BR>
+1<BR>
+1<BR>
+1<BR>
+
+  <div id="firepad-container" style="width:100px;height:200px;background-color:rgb(134, 134, 134);"></div>
+
+  <!--
+  <button id="button" aria-describedby="tooltip">I'm a button</button>
+  <div id="tooltip" role="tooltip">I'm a tooltip</div>-->
+
+  <script>
+function init2(){
+    const button = document.getElementById('button');
+    const tooltip = document.getElementById('tooltip');
+
+    // Pass the button, the tooltip, and some options, and Popper will do the
+    // magic positioning for you:
+    Popper.createPopper(button, tooltip, {
+        placement: 'top',
+    });
+}
+function init(){
+
+    console.log("init()...........................start");
+    var tDivObj = document.getElementById('firepad-container');
+    const tooltip = document.getElementById('tooltip');
+
+      var cursorEl = document.createElement('span');
+      cursorEl.className = 'other-client';
+      cursorEl.style.borderLeftWidth = '2px';
+      cursorEl.style.borderLeftStyle = 'solid';
+      cursorEl.style.borderLeftColor = 'red';
+      cursorEl.style.marginLeft = cursorEl.style.marginRight = '-1px';
+      //cursorEl.style.height = (cursorCoords.bottom - cursorCoords.top) * 0.9 + 'px';
+      cursorEl.style.height = '20px';
+      cursorEl.setAttribute('data-clientid', "zero12a");
+      cursorEl.setAttribute('aria-describedby', "tooltip");
+      cursorEl.style.zIndex = 0;
+
+    
+      var spanName = document.createElement('span');
+      spanName.id = "tooltip";
+      cursorEl.appendChild( spanName );
+      //spanName.style.position = "absolute";
+      spanName.textContent = "Teacher text2";
+      spanName.innerHTML = "Teacher html2";
+      //spanName.appand( document.createTextNode("Teacher node") );
+      spanName.style.backgroundColor = 'blue';
+      if(0 == 0){
+        //alert("라인 0");
+        //spanName.style.top = "19px";
+      }else{
+        //spanName.style.top = "-20px";
+      }
+      spanName.style.marginLeft = "-2px";
+      //spanName.style.zIndex = 0;
+      spanName.style.height = '20px';
+      spanName.style.lineHeight = '18px';
+      //spanName.style.width = '100px';
+      //spanName.setAttribute('tooltip', "tooltip");
+
+      tDivObj.appendChild( cursorEl );
+
+      Popper.createPopper(cursorEl, spanName, {
+        placement: 'top-start',
+      });
+}
+
+  </script>
+</body>
+</html>

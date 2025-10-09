@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <title>
+            perf swoole
+        </title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>        
+    </head>
+    <body>
+        <input type="text" id="tloop" value="10">
+        <input type=button id="tbtn" value="load ajax" style="height:22px">
+        <input type=button id="tbtnAvg" value="get avg" style="height:22px">
+        <textarea id="tarea" style="width:100%;height:90%;">k</textarea>
+    </body>
+    <script>
+
+    var reqCnt = 0;
+    var res = [];
+
+    $("#tarea").val("");
+    
+    $("#tbtn").click(function() {
+        for(var i=0;i<$("#tloop").val();i++){
+            $("#tarea").val("");
+            var diffDate_1 = new Date();        
+            var min = Math.ceil(10000000);
+            var max = Math.floor(99999999);
+            var reqToken = Math.floor(Math.random() * (max - min)) + min;
+            $.ajax({
+                url: "/data",
+                data: {t: reqToken},
+                privateDate1:diffDate_1
+            })
+            .done(function( data ) {
+                $("#tarea").val(data);
+
+                var diffDate_2 = new Date()
+                var diff = Math.abs(diffDate_2.getTime() - this.privateDate1.getTime());
+
+                reqCnt++;
+
+                res[res.length] = diff;
+                alog(reqCnt + " = " + diff);
+            });
+        }
+
+    });
+    $("#tbtnAvg").click(function() {
+        var sum = 0;
+        for( var i = 0; i < res.length; i++ ){
+            sum += parseInt( res[i], 10 ); //don't forget to add the base
+        }
+
+        var avg = sum/res.length;
+        alog("avg = " + avg);
+    });
+
+    function alog(t){
+        if(console)console.log(t);
+    }
+    </script>
+</html>

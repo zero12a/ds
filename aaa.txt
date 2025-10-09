@@ -1,0 +1,6 @@
+ç
+
+
+
+$ export AWS_CONFIG_FILE=/root/.aws/config
+$ export AWS_SHARED_CREDENTIALS_FILE=/root/.aws/credentials
