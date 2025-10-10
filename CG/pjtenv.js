@@ -506,38 +506,10 @@ function G6_USERDEF(token){
 
 	alog("G6_USERDEF-----------------end");
 }
-//
-//행추가
-function G6_ROWADD(tinput,token){
-	alog("G6_ROWADD()------------start");
-
-	if( !(lastinputG6)		|| lastinputG6.get("G6-PJTSEQ") == ""	){
-		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
-		return;
-	}
-
-
-	var rowId =  webix.uid();
-
-	var rowData = {
-        id: rowId
-		,"CFGSEQ" : ""
-		,"USEYN" : ""
-		,"CFGID" : ""
-		,"CFGNM" : ""
-		,"MVCGBN" : ""
-		,"PATH" : ""
-		,"CFGORD" : ""
-		,"ADDDT" : ""
-		,"MODDT" : ""
-		, changeState: true
-		, changeCud: "inserted"
-	};
-
-
-	$$("wixdtG6").add(rowData,0);
-    $$("wixdtG6").addRowCss(rowId, "fontStateInsert");
-    alog("add row rowId : " + rowId);
+//새로고침	
+function G6_RELOAD(token){
+  alog("G6_RELOAD-----------------start");
+  G6_SEARCH(lastinputG6,token);
 }
 //행삭제
 function G6_ROWDELETE(tinput,token){
@@ -555,103 +527,7 @@ function G6_ROWDELETE(tinput,token){
         alert("삭제할 행을 선택하세요.");
     }
 }
-//CONFIG
-function G6_SAVE(token){
-	alog("G6_SAVE()------------start");
-
-	if(G6_REQUEST_ON == true){
-		alert("이전 요청을 서버에서 처리 중입니다. 잠시 기다려 주세요.");
-		return;
-	}
-	G6_REQUEST_ON = true;
-
-    allData = $$("wixdtG6").serialize(true);
-    //alog(allData);
-    var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));        //post 만들기
-		sendFormData = new FormData($("#condition")[0]);
-		var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG6 != "undefined" && lastinputG6 != null){
-		var tKeys = lastinputG6.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG6.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG6.get(tKeys[i])); 
-		}
-	}
-	sendFormData.append("G6-JSON" , myJsonString);
-	allData = $$("wixdtG6").serialize(true);
-	//alog(allData);
-	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
-	sendFormData.append("G6-JSON",myJsonString);
-
-	$.ajax({
-		type : "POST",
-		url : url_G6_SAVE+"&TOKEN=" + token + "&" + conAllData ,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: false,
-		success: function(data){
-			alog("   json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-
-			//그리드에 데이터 반영
-			saveToGroup(data);
-
-		},
-		error: function(error){
-
-			alog("Response ajax error occer.");
-			if(error.status == 200){
-				msgError("[CONFIG] Ajax http error ( Response status is " + error.status + ", Not json format, Check console log )", 3);
-				alog("	responseText" + error.responseText);//not json format
-			}else if(error.status == 500){
-				msgError("[CONFIG] Ajax http error ( Response status is " + error.status + ", Server error occer, Check console log )", 3);
-				alog("	responseText" + error.responseText); //Server don't response
-			}else if(error.status == 0){
-				msgError("[CONFIG] Ajax http error ( Response status is " + error.status + ", Server don't resonse, Check console log )", 3);
-				alog("	responseJSON = " + error.responseJSON); //Server don't response
-			}else{
-				msgError("[CONFIG] Ajax http error ( Response status is " + error.status + ", Server unknown resonse, Check console log )", 3);
-				alog(error); //Server don't response
-			}
-
-		},
-		complete : function() {
-			G6_REQUEST_ON = false;
-		}
-
-	});
-	
-	alog("G6_SAVE()------------end");
-}
-//엑셀 다운받기 - 렌더링 후값인 NM (CONFIG)
-function G6_EXCEL(tinput,token){
-	alog("G6_EXCEL()------------start");
-
-	webix.toExcel($$("wixdtG6"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"CFGSEQ": {header: "SEQ"}
-,			"USEYN": {header: "사용"}
-,			"CFGID": {header: "CFGID"}
-,			"CFGNM": {header: "CFGNM"}
-,			"MVCGBN": {header: "MVCGBN"}
-,			"PATH": {header: "PATH"}
-,			"CFGORD": {header: "ORD"}
-,			"ADDDT": {header: "ADDDT"}
-,			"MODDT": {header: "MODDT"}
-			}
-		}   
-	);
-
-
-	alog("G6_EXCEL()------------end");
-}//그리드 조회(CONFIG)	
+//그리드 조회(CONFIG)	
 function G6_SEARCH(tinput,token){
 	alog("G6_SEARCH()------------start");
 
@@ -740,10 +616,134 @@ function G6_SEARCH(tinput,token){
         alog("G6_SEARCH()------------end");
     }
 
-//새로고침	
-function G6_RELOAD(token){
-  alog("G6_RELOAD-----------------start");
-  G6_SEARCH(lastinputG6,token);
+//엑셀 다운받기 - 렌더링 후값인 NM (CONFIG)
+function G6_EXCEL(tinput,token){
+	alog("G6_EXCEL()------------start");
+
+	webix.toExcel($$("wixdtG6"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"CFGSEQ": {header: "SEQ"}
+,			"USEYN": {header: "사용"}
+,			"CFGID": {header: "CFGID"}
+,			"CFGNM": {header: "CFGNM"}
+,			"MVCGBN": {header: "MVCGBN"}
+,			"PATH": {header: "PATH"}
+,			"CFGORD": {header: "ORD"}
+,			"ADDDT": {header: "ADDDT"}
+,			"MODDT": {header: "MODDT"}
+			}
+		}   
+	);
+
+
+	alog("G6_EXCEL()------------end");
+}//
+//행추가
+function G6_ROWADD(tinput,token){
+	alog("G6_ROWADD()------------start");
+
+	if( !(lastinputG6)		|| lastinputG6.get("G6-PJTSEQ") == ""	){
+		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
+		return;
+	}
+
+
+	var rowId =  webix.uid();
+
+	var rowData = {
+        id: rowId
+		,"CFGSEQ" : ""
+		,"USEYN" : ""
+		,"CFGID" : ""
+		,"CFGNM" : ""
+		,"MVCGBN" : ""
+		,"PATH" : ""
+		,"CFGORD" : ""
+		,"ADDDT" : ""
+		,"MODDT" : ""
+		, changeState: true
+		, changeCud: "inserted"
+	};
+
+
+	$$("wixdtG6").add(rowData,0);
+    $$("wixdtG6").addRowCss(rowId, "fontStateInsert");
+    alog("add row rowId : " + rowId);
+}
+//CONFIG
+function G6_SAVE(token){
+	alog("G6_SAVE()------------start");
+
+	if(G6_REQUEST_ON == true){
+		alert("이전 요청을 서버에서 처리 중입니다. 잠시 기다려 주세요.");
+		return;
+	}
+	G6_REQUEST_ON = true;
+
+    allData = $$("wixdtG6").serialize(true);
+    //alog(allData);
+    var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));        //post 만들기
+		sendFormData = new FormData($("#condition")[0]);
+		var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG6 != "undefined" && lastinputG6 != null){
+		var tKeys = lastinputG6.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG6.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG6.get(tKeys[i])); 
+		}
+	}
+	sendFormData.append("G6-JSON" , myJsonString);
+	allData = $$("wixdtG6").serialize(true);
+	//alog(allData);
+	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
+	sendFormData.append("G6-JSON",myJsonString);
+
+	$.ajax({
+		type : "POST",
+		url : url_G6_SAVE+"&TOKEN=" + token + "&" + conAllData ,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: false,
+		success: function(data){
+			alog("   json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+
+			//그리드에 데이터 반영
+			saveToGroup(data);
+
+		},
+		error: function(error){
+
+			alog("Response ajax error occer.");
+			if(error.status == 200){
+				msgError("[CONFIG] Ajax http error ( Response status is " + error.status + ", Not json format, Check console log )", 3);
+				alog("	responseText" + error.responseText);//not json format
+			}else if(error.status == 500){
+				msgError("[CONFIG] Ajax http error ( Response status is " + error.status + ", Server error occer, Check console log )", 3);
+				alog("	responseText" + error.responseText); //Server don't response
+			}else if(error.status == 0){
+				msgError("[CONFIG] Ajax http error ( Response status is " + error.status + ", Server don't resonse, Check console log )", 3);
+				alog("	responseJSON = " + error.responseJSON); //Server don't response
+			}else{
+				msgError("[CONFIG] Ajax http error ( Response status is " + error.status + ", Server unknown resonse, Check console log )", 3);
+				alog(error); //Server don't response
+			}
+
+		},
+		complete : function() {
+			G6_REQUEST_ON = false;
+		}
+
+	});
+	
+	alog("G6_SAVE()------------end");
 }
 //그리드 조회(FILE)	
 function G7_SEARCH(tinput,token){
@@ -834,18 +834,30 @@ function G7_SEARCH(tinput,token){
         alog("G7_SEARCH()------------end");
     }
 
-//새로고침	
-function G7_RELOAD(token){
-  alog("G7_RELOAD-----------------start");
-  G7_SEARCH(lastinputG7,token);
-}
-//사용자정의함수 : 사용자정의
-function G7_USERDEF(token){
-	alog("G7_USERDEF-----------------start");
+//엑셀 다운받기 - 렌더링 후값인 NM (FILE)
+function G7_EXCEL(tinput,token){
+	alog("G7_EXCEL()------------start");
 
-	alog("G7_USERDEF-----------------end");
-}
-//
+	webix.toExcel($$("wixdtG7"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"FILESEQ": {header: "SEQ"}
+,			"MKFILETYPE": {header: "파일타입"}
+,			"MKFILETYPENM": {header: "타입명"}
+,			"MKFILEFORMAT": {header: "포멧"}
+,			"MKFILEEXT": {header: "확장자"}
+,			"TEMPLATE": {header: "템플릿"}
+,			"FILEORD": {header: "순번"}
+,			"USEYN": {header: "사용"}
+,			"ADDDT": {header: "ADDDT"}
+,			"MODDT": {header: "MODDT"}
+			}
+		}   
+	);
+
+
+	alog("G7_EXCEL()------------end");
+}//
 //행추가
 function G7_ROWADD(tinput,token){
 	alog("G7_ROWADD()------------start");
@@ -879,46 +891,7 @@ function G7_ROWADD(tinput,token){
     $$("wixdtG7").addRowCss(rowId, "fontStateInsert");
     alog("add row rowId : " + rowId);
 }
-//행삭제
-function G7_ROWDELETE(tinput,token){
-	alog("G7_ROWDELETE()------------start");
-
-    rowId = $$("wixdtG7").getSelectedId(false);
-    alog(rowId);
-    if(typeof rowId != "undefined"){
-        $$("wixdtG7").addRowCss(rowId, "fontStateDelete");
-
-        rowItem = $$("wixdtG7").getItem(rowId);
-        rowItem.changeState = true;
-        rowItem.changeCud = "deleted";
-    }else{
-        alert("삭제할 행을 선택하세요.");
-    }
-}
-//엑셀 다운받기 - 렌더링 후값인 NM (FILE)
-function G7_EXCEL(tinput,token){
-	alog("G7_EXCEL()------------start");
-
-	webix.toExcel($$("wixdtG7"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"FILESEQ": {header: "SEQ"}
-,			"MKFILETYPE": {header: "파일타입"}
-,			"MKFILETYPENM": {header: "타입명"}
-,			"MKFILEFORMAT": {header: "포멧"}
-,			"MKFILEEXT": {header: "확장자"}
-,			"TEMPLATE": {header: "템플릿"}
-,			"FILEORD": {header: "순번"}
-,			"USEYN": {header: "사용"}
-,			"ADDDT": {header: "ADDDT"}
-,			"MODDT": {header: "MODDT"}
-			}
-		}   
-	);
-
-
-	alog("G7_EXCEL()------------end");
-}//FILE
+//FILE
 function G7_SAVE(token){
 	alog("G7_SAVE()------------start");
 
@@ -991,4 +964,31 @@ function G7_SAVE(token){
 	});
 	
 	alog("G7_SAVE()------------end");
+}
+//사용자정의함수 : 사용자정의
+function G7_USERDEF(token){
+	alog("G7_USERDEF-----------------start");
+
+	alog("G7_USERDEF-----------------end");
+}
+//새로고침	
+function G7_RELOAD(token){
+  alog("G7_RELOAD-----------------start");
+  G7_SEARCH(lastinputG7,token);
+}
+//행삭제
+function G7_ROWDELETE(tinput,token){
+	alog("G7_ROWDELETE()------------start");
+
+    rowId = $$("wixdtG7").getSelectedId(false);
+    alog(rowId);
+    if(typeof rowId != "undefined"){
+        $$("wixdtG7").addRowCss(rowId, "fontStateDelete");
+
+        rowItem = $$("wixdtG7").getItem(rowId);
+        rowItem.changeState = true;
+        rowItem.changeCud = "deleted";
+    }else{
+        alert("삭제할 행을 선택하세요.");
+    }
 }

@@ -444,41 +444,6 @@ function G1_SEARCHALL(token){
 	G2_SEARCH(lastinputG2,token);
 	alog("G1_SEARCHALL--------------------------end");
 }
-//엑셀 다운받기 - 렌더링 후값인 NM (rst3)
-function G2_DOWN(tinput,token){
-	alog("G2_DOWN()------------start");
-
-	webix.toExcel($$("wixdtG2"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"RSTSEQ": {header: "RSTSEQ"}
-,			"PJTSEQ": {header: "PJTSEQ"}
-,			"PGMSEQ": {header: "PGMSEQ"}
-,			"FILETYPE": {header: "FILETYPE"}
-,			"VERSEQ": {header: "VERSEQ"}
-,			"SRCORD": {header: "ORD"}
-,			"SRCTXT": {header: "TXT"}
-,			"ADDDT": {header: "생성일"}
-,			"MODDT": {header: "MODDT"}
-			}
-		}   
-	);
-
-
-	alog("G2_DOWN()------------end");
-}//사용자정의함수 : 경고
-function G2_UDEF(token){
-	alog("G2_UDEF-----------------start");
-alert('userdef');
-
-
-	alog("G2_UDEF-----------------end");
-}
-//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
-}
 //rst3
 function G2_SV(token){
 	alog("G2_SV()------------start");
@@ -552,6 +517,14 @@ function G2_SV(token){
 	});
 	
 	alog("G2_SV()------------end");
+}
+//사용자정의함수 : 경고
+function G2_UDEF(token){
+	alog("G2_UDEF-----------------start");
+alert('userdef');
+
+
+	alog("G2_UDEF-----------------end");
 }
 //그리드 조회(rst3)	
 function G2_SEARCH(tinput,token){
@@ -641,20 +614,6 @@ function G2_SEARCH(tinput,token){
         alog("G2_SEARCH()------------end");
     }
 
-//사용자정의함수 : H
-function G2_HDNCOL(token){
-	alog("G2_HDNCOL-----------------start");
-
-	if(isToggleHiddenColG2){
-		$$("wixdtG2").hideColumn("PJTSEQ");
-		isToggleHiddenColG2 = false;
-	}else{
-		$$("wixdtG2").showColumn("PJTSEQ");
-			isToggleHiddenColG2 = true;
-		}
-
-		alog("G2_HDNCOL-----------------end");
-	}
 //엑셀 다운받기 - 렌더링 전값인 CD (rst3)
 function G2_EDOWN(tinput,token){
 	alog("G2_EDOWN()------------start");
@@ -677,4 +636,44 @@ function G2_EDOWN(tinput,token){
 
 
 	alog("G2_EDOWN()------------end");
+}//엑셀 다운받기 - 렌더링 후값인 NM (rst3)
+function G2_DOWN(tinput,token){
+	alog("G2_DOWN()------------start");
+
+	webix.toExcel($$("wixdtG2"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"RSTSEQ": {header: "RSTSEQ"}
+,			"PJTSEQ": {header: "PJTSEQ"}
+,			"PGMSEQ": {header: "PGMSEQ"}
+,			"FILETYPE": {header: "FILETYPE"}
+,			"VERSEQ": {header: "VERSEQ"}
+,			"SRCORD": {header: "ORD"}
+,			"SRCTXT": {header: "TXT"}
+,			"ADDDT": {header: "생성일"}
+,			"MODDT": {header: "MODDT"}
+			}
+		}   
+	);
+
+
+	alog("G2_DOWN()------------end");
+}//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
 }
+//사용자정의함수 : H
+function G2_HDNCOL(token){
+	alog("G2_HDNCOL-----------------start");
+
+	if(isToggleHiddenColG2){
+		$$("wixdtG2").hideColumn("PJTSEQ");
+		isToggleHiddenColG2 = false;
+	}else{
+		$$("wixdtG2").showColumn("PJTSEQ");
+			isToggleHiddenColG2 = true;
+		}
+
+		alog("G2_HDNCOL-----------------end");
+	}

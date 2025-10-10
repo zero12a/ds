@@ -465,18 +465,6 @@ function G4_INIT(){
   alog("G4_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
-// CONDITIONSearch	
-function G1_SEARCHALL(token){
-	alog("G1_SEARCHALL--------------------------start");
-	//폼의 모든값 구하기
-	var ConAllData = $( "#condition" ).serialize();
-	alog("ConAllData:" + ConAllData);
-	//json : G1
-			lastinputG2 = new HashMap(); //프로그램
-		//  호출
-	G2_SEARCH(lastinputG2,token);
-	alog("G1_SEARCHALL--------------------------end");
-}
 //검색조건 초기화
 function G1_RESET(){
 	alog("G1_RESET--------------------------start");
@@ -513,6 +501,18 @@ function G1_SAVE(token){
 		}
 	});
 	alog("G1_SAVE-------------------end");	
+}
+// CONDITIONSearch	
+function G1_SEARCHALL(token){
+	alog("G1_SEARCHALL--------------------------start");
+	//폼의 모든값 구하기
+	var ConAllData = $( "#condition" ).serialize();
+	alog("ConAllData:" + ConAllData);
+	//json : G1
+			lastinputG2 = new HashMap(); //프로그램
+		//  호출
+	G2_SEARCH(lastinputG2,token);
+	alog("G1_SEARCHALL--------------------------end");
 }
 
 
@@ -620,6 +620,19 @@ function G2_RELOAD(token){
   alog("G2_RELOAD-----------------start");
   G2_SEARCH(lastinputG2,token);
 }
+    function G3_HIDDENCOL(){
+		alog("G3_HIDDENCOL()..................start");
+        if(isToggleHiddenColG3){
+            isToggleHiddenColG3 = false;     }else{
+            isToggleHiddenColG3 = true;
+        }
+		alog("G3_HIDDENCOL()..................end");
+    }
+//새로고침	
+function G3_RELOAD(token){
+  alog("G3_RELOAD-----------------start");
+  G3_SEARCH(lastinputG3,token);
+}
 
 
 
@@ -713,20 +726,11 @@ function G3_EXCEL(){
 	$("#DATA_ROWS").val(myXmlString);
 	myForm.submit();
 }
-    function G3_HIDDENCOL(){
-		alog("G3_HIDDENCOL()..................start");
-        if(isToggleHiddenColG3){
-            isToggleHiddenColG3 = false;     }else{
-            isToggleHiddenColG3 = true;
-        }
-		alog("G3_HIDDENCOL()..................end");
-    }
 //새로고침	
-function G3_RELOAD(token){
-  alog("G3_RELOAD-----------------start");
-  G3_SEARCH(lastinputG3,token);
-}
-//디테일 검색	
+function G4_RELOAD(token){
+	alog("G4_RELOAD-----------------start");
+	G4_SEARCH(lastinputG4,token);
+}//디테일 검색	
 function G4_SEARCH(tinput,token){
        alog("(FORMVIEW) G4_SEARCH---------------start");
 
@@ -776,9 +780,4 @@ function G4_SEARCH(tinput,token){
     });
     alog("(FORMVIEW) G4_SEARCH---------------end");
 
-}
-//새로고침	
-function G4_RELOAD(token){
-	alog("G4_RELOAD-----------------start");
-	G4_SEARCH(lastinputG4,token);
 }

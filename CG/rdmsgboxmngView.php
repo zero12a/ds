@@ -110,8 +110,8 @@ var CFG_URL_CODE_API = "<?=$CFG["CFG_URL_CODE_API"]?>"; // /d.s/CG/codeapiContro
 	-->
  	<div class="GRP_OBJECT" style="width:100%;">
         <div class="GRP_GAP"><!--흰색 바깥 여백-->
-            <!--<div class="GRP_INNER" style="height:;">-->
-            <div class="GRP_INNER" style="">	  	<div style="width:0px;height:0px;overflow: hidden"><form id="condition" onsubmit="return false;"></div>
+            <!--<div class="GRP_INNER" style="height:74px;">-->
+            <div class="GRP_INNER" style="height:74px;">	  	<div style="width:0px;height:0px;overflow: hidden"><form id="condition" onsubmit="return false;"></div>
 		<div class="CONDITION_LABELGRP">
 			<div class="CONDITION_LABEL"  style="">
 				<b>* [RD]메시지박스MNG</b>	

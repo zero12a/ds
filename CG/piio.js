@@ -642,6 +642,18 @@ setCodeCombo("FORMVIEW", $("#G3-FOOTERMATH"), "GRIDFOOTER","");
   alog("G3_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+// CONDITIONSearch	
+function G1_SEARCHALL(token){
+	alog("G1_SEARCHALL--------------------------start");
+	//폼의 모든값 구하기
+	var ConAllData = $( "#condition" ).serialize();
+	alog("ConAllData:" + ConAllData);
+	//json : G1
+			lastinputG2 = new HashMap(); //
+		//  호출
+	G2_SEARCH(lastinputG2,token);
+	alog("G1_SEARCHALL--------------------------end");
+}
 //사용자정의함수 : 사용자정의
 function G1_USERDEF(token){
 	alog("G1_USERDEF-----------------start");
@@ -685,36 +697,73 @@ function G1_SAVE(token){
 	});
 	alog("G1_SAVE-------------------end");	
 }
-// CONDITIONSearch	
-function G1_SEARCHALL(token){
-	alog("G1_SEARCHALL--------------------------start");
-	//폼의 모든값 구하기
-	var ConAllData = $( "#condition" ).serialize();
-	alog("ConAllData:" + ConAllData);
-	//json : G1
-			lastinputG2 = new HashMap(); //
-		//  호출
-	G2_SEARCH(lastinputG2,token);
-	alog("G1_SEARCHALL--------------------------end");
+//
+function G2_CHKSAVE(token){
+	alog("G2_CHKSAVE()------------start");
+
+	var jsonSelectedRows = $btG2.bootstrapTable('getSelections');
+	var strSelectedRowsIds = "";
+
+	for(i=0;i<jsonSelectedRows.length;i++){
+		if(i>0) strSelectedRowsIds += ",";
+
+
+		strSelectedRowsIds += jsonSelectedRows[i].IOSEQ;
+	}
+        //전송용 post 만들기
+		sendFormData = new FormData($("#condition")[0]);
+
+		if(typeof lastinputG2 != "undefined"){
+			var tKeys = lastinputG2.keys();
+			for(i=0;i<tKeys.length;i++) {
+				sendFormData.append(tKeys[i],lastinputG2.get(tKeys[i]));
+				//console.log(tKeys[i]+ '='+ lastinputG2.get(tKeys[i])); 
+			}
+		}
+	//CHK 배열 합치기
+	sendFormData.append("G2-CHK",strSelectedRowsIds);
+
+	$.ajax({
+		type : "POST",
+		url : url_G2_CHKSAVE + "&TOKEN=" + token ,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: false,
+		success: function(data){
+			alog("   json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+
+			//그리드에 데이터 반영
+			if(data && data.RTN_CD == "200"){
+				msgNotice("[] 정상 처리되었습니다.");
+			}else{
+				msgError("처리 결과 실패했습니다. ( " + data.ERR_CD + ":" + data.RTN_MSG + " )",3);
+			}
+
+		},
+		error: function(error){
+			msgError("Ajax http 500 error ( " + error + " )");
+			alog("Ajax http 500 error ( " + error + " )");
+		}
+	});
+	
+	alog("G2_CHKSAVE()------------end");
+}
+//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
 }
 //사용자정의함수 : 사용자정의
 function G2_USERDEF(token){
 	alog("G2_USERDEF-----------------start");
 
 	alog("G2_USERDEF-----------------end");
-}
-// 엑셀 내려받기
-function G2_EXCEL(){
-	alog("G2_EXCEL()-------------------------start");
-
-	$btG2.tableExport({type:'excel'});
-
-	alog("G2_EXCEL()------------end");
-}
-//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
 }
 //그리드 조회()	
 function G2_SEARCH(tinput,token){
@@ -776,68 +825,129 @@ function G2_SEARCH(tinput,token){
 		alog("G2_SEARCH()------------end");
 }
 
-//
-function G2_CHKSAVE(token){
-	alog("G2_CHKSAVE()------------start");
+// 엑셀 내려받기
+function G2_EXCEL(){
+	alog("G2_EXCEL()-------------------------start");
 
-	var jsonSelectedRows = $btG2.bootstrapTable('getSelections');
-	var strSelectedRowsIds = "";
+	$btG2.tableExport({type:'excel'});
 
-	for(i=0;i<jsonSelectedRows.length;i++){
-		if(i>0) strSelectedRowsIds += ",";
-
-
-		strSelectedRowsIds += jsonSelectedRows[i].IOSEQ;
-	}
-        //전송용 post 만들기
-		sendFormData = new FormData($("#condition")[0]);
-
-		if(typeof lastinputG2 != "undefined"){
-			var tKeys = lastinputG2.keys();
-			for(i=0;i<tKeys.length;i++) {
-				sendFormData.append(tKeys[i],lastinputG2.get(tKeys[i]));
-				//console.log(tKeys[i]+ '='+ lastinputG2.get(tKeys[i])); 
-			}
-		}
-	//CHK 배열 합치기
-	sendFormData.append("G2-CHK",strSelectedRowsIds);
-
-	$.ajax({
-		type : "POST",
-		url : url_G2_CHKSAVE + "&TOKEN=" + token ,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: false,
-		success: function(data){
-			alog("   json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-
-			//그리드에 데이터 반영
-			if(data && data.RTN_CD == "200"){
-				msgNotice("[] 정상 처리되었습니다.");
-			}else{
-				msgError("처리 결과 실패했습니다. ( " + data.ERR_CD + ":" + data.RTN_MSG + " )",3);
-			}
-
-		},
-		error: function(error){
-			msgError("Ajax http 500 error ( " + error + " )");
-			alog("Ajax http 500 error ( " + error + " )");
-		}
-	});
-	
-	alog("G2_CHKSAVE()------------end");
+	alog("G2_EXCEL()------------end");
 }
 //새로고침	
 function G3_RELOAD(token){
 	alog("G3_RELOAD-----------------start");
 	G3_SEARCH(lastinputG3,token);
-}//G3_SAVE
+}//디테일 검색	
+function G3_SEARCH(tinput,token){
+       alog("(FORMVIEW) G3_SEARCH---------------start");
+
+	//post 만들기
+	sendFormData = new FormData($("#condition")[0]);
+	var conAllData = "";
+	if(typeof tinput != "undefined" && tinput != null){
+		var tKeys = tinput.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],tinput.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ tinput.get(tKeys[i])); 
+		}
+	}
+
+	$.ajax({
+        type : "POST",
+        url : url_G3_SEARCH+"&TOKEN=" + token + "&" + conAllData ,
+        data : sendFormData,
+		processData: false,
+		contentType: false,
+        dataType: "json",
+        success: function(data){
+            alog(data);
+
+			if(data && data.RTN_CD == "200"){
+				if(data.RTN_DATA){
+					msgNotice("정상적으로 조회되었습니다.",1);
+				}else{
+					msgNotice("정상적으로 조회되었으나 데이터가 없습니다.",2);
+					return;
+				}
+			}else{
+				msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
+				return;
+			}
+
+            //모드 변경하기
+            $("#G3-CTLCUD").val("R");
+			//SETVAL  가져와서 세팅
+			$("#G3-PJTSEQ").val(data.RTN_DATA.PJTSEQ);//PJTSEQ 변수세팅
+			$("#G3-PGMSEQ").val(data.RTN_DATA.PGMSEQ);//PGMSEQ 변수세팅
+			$("#G3-GRPSEQ").val(data.RTN_DATA.GRPSEQ);//GRPSEQ 변수세팅
+			$("#G3-IOSEQ").val(data.RTN_DATA.IOSEQ);//IOSEQ 변수세팅
+			$("#G3-COLORD").val(data.RTN_DATA.COLORD);//COLORD 변수세팅
+			$("#G3-COLID").val(data.RTN_DATA.COLID);//컬럼ID 변수세팅
+			$("#G3-COLNM").val(data.RTN_DATA.COLNM);//컬럼명 변수세팅
+			$("#G3-DATATYPE").val(data.RTN_DATA.DATATYPE);//데이터타입 변수세팅
+			$("#G3-VALIDSEQ").val(data.RTN_DATA.VALIDSEQ);//VALIDSEQ 변수세팅
+			$("#G3-DATASIZE").val(data.RTN_DATA.DATASIZE);//데이터사이즈 변수세팅
+			$("#G3-OBJTYPE").val(data.RTN_DATA.OBJTYPE);//오브젝트타입 변수세팅
+			$("#G3-POPUP").val(data.RTN_DATA.POPUP);//POPUP 변수세팅
+			//KEYYN 값넣기
+			$('input:radio[name="G3-KEYYN"]').prop('checked', false);//기존 선택사항 모두 초기화
+			if(data.RTN_DATA.KEYYN != ""){
+				$('input:radio[name="G3-KEYYN"][value="' + data.RTN_DATA.KEYYN + '"]').prop('checked', true);
+			}
+			//SEQYN 값넣기
+			$('input:radio[name="G3-SEQYN"]').prop('checked', false);//기존 선택사항 모두 초기화
+			if(data.RTN_DATA.SEQYN != ""){
+				$('input:radio[name="G3-SEQYN"][value="' + data.RTN_DATA.SEQYN + '"]').prop('checked', true);
+			}
+			//LBLHIDDENYN 값넣기
+			$('input:radio[name="G3-LBLHIDDENYN"]').prop('checked', false);//기존 선택사항 모두 초기화
+			if(data.RTN_DATA.LBLHIDDENYN != ""){
+				$('input:radio[name="G3-LBLHIDDENYN"][value="' + data.RTN_DATA.LBLHIDDENYN + '"]').prop('checked', true);
+			}
+			$("#G3-LBLWIDTH").val(data.RTN_DATA.LBLWIDTH);//라벨가로 변수세팅
+			$("#G3-LBLALIGN").val(data.RTN_DATA.LBLALIGN);//LBLALIGN 변수세팅
+			$("#G3-OBJWIDTH").val(data.RTN_DATA.OBJWIDTH);//오브젝트가로 변수세팅
+			$("#G3-OBJHEIGHT").val(data.RTN_DATA.OBJHEIGHT);//오브젝트세로 변수세팅
+			$("#G3-OBJALIGN").val(data.RTN_DATA.OBJALIGN);//가로정렬 변수세팅
+			//HIDDENYN 값넣기
+			$('input:radio[name="G3-HIDDENYN"]').prop('checked', false);//기존 선택사항 모두 초기화
+			if(data.RTN_DATA.HIDDENYN != ""){
+				$('input:radio[name="G3-HIDDENYN"][value="' + data.RTN_DATA.HIDDENYN + '"]').prop('checked', true);
+			}
+			//EDITYN 값넣기
+			$('input:radio[name="G3-EDITYN"]').prop('checked', false);//기존 선택사항 모두 초기화
+			if(data.RTN_DATA.EDITYN != ""){
+				$('input:radio[name="G3-EDITYN"][value="' + data.RTN_DATA.EDITYN + '"]').prop('checked', true);
+			}
+		//CodeMirror SetVal
+		obj_G3_FNINIT.setValue(data.RTN_DATA.FNINIT); //FNINIT 
+			//BRYN 값넣기
+			$('input:radio[name="G3-BRYN"]').prop('checked', false);//기존 선택사항 모두 초기화
+			if(data.RTN_DATA.BRYN != ""){
+				$('input:radio[name="G3-BRYN"][value="' + data.RTN_DATA.BRYN + '"]').prop('checked', true);
+			}
+			$("#G3-FORMAT").val(data.RTN_DATA.FORMAT);//FORMAT 변수세팅
+			$("#G3-FOOTERMATH").val(data.RTN_DATA.FOOTERMATH);//FOOTERMATH 변수세팅
+			$("#G3-FOOTERNM").val(data.RTN_DATA.FOOTERNM);//FOOTERNM 변수세팅
+			$("#G3-ICONNM").val(data.RTN_DATA.ICONNM);//ICONNM 변수세팅
+			$("#G3-ICONSTYLE").val(data.RTN_DATA.ICONSTYLE);//ICONSTYLE 변수세팅
+			$("#G3-LBLSTYLE").val(data.RTN_DATA.LBLSTYLE);//LBLSTYLE 변수세팅
+			$("#G3-OBJSTYLE").val(data.RTN_DATA.OBJSTYLE);//OBJSTYLE 변수세팅
+			$("#G3-OBJ2STYLE").val(data.RTN_DATA.OBJ2STYLE);//OBJ2STYLE 변수세팅
+	$("#G3-ADDDT").text(data.RTN_DATA.ADDDT);//ADDDT 변수세팅
+	$("#G3-ADDID").text(data.RTN_DATA.ADDID);//ADDID 변수세팅
+	$("#G3-MODDT").text(data.RTN_DATA.MODDT);//MODDT 변수세팅
+	$("#G3-MODID").text(data.RTN_DATA.MODID);//MODID 변수세팅
+        },
+        error: function(error){
+            alog("Error:");
+            alog(error);
+        }
+    });
+    alog("(FORMVIEW) G3_SEARCH---------------end");
+
+}
+//G3_SAVE
 //IO_FILE_YN = V/, G/N	
 //IO_FILE_YN = N	
 function G3_SAVE(token){	
@@ -967,6 +1077,49 @@ function G3_SAVE(token){
 		}
 	});
 }
+//사용자정의함수 : 사용자정의
+function G3_USERDEF(token){
+	alog("G3_USERDEF-----------------start");
+
+	alog("G3_USERDEF-----------------end");
+}
+//	
+function G3_NEW(){
+	alog("[FromView] G3_NEW---------------start");
+	$("#G3-CTLCUD").val("C");
+	//PMGIO 로직
+	$("#G3-PJTSEQ").val("");//PJTSEQ 신규초기화	
+	$("#G3-PGMSEQ").val("");//PGMSEQ 신규초기화	
+	$("#G3-GRPSEQ").val("");//GRPSEQ 신규초기화	
+	$("#G3-IOSEQ").val("");//IOSEQ 신규초기화	
+	$("#G3-COLORD").val("");//COLORD 신규초기화	
+	$("#G3-COLID").val("");//컬럼ID 신규초기화	
+	$("#G3-COLNM").val("");//컬럼명 신규초기화	
+	$("#G3-DATASIZE").val("");//데이터사이즈 신규초기화	
+	$("#G3-POPUP").val("");//POPUP 신규초기화	
+	$("#G3-KEYYN").val("");//KEYYN 신규초기화	
+	$("#G3-SEQYN").val("");//SEQYN 신규초기화	
+	$("#G3-LBLHIDDENYN").val("");//LBLHIDDENYN 신규초기화	
+	$("#G3-LBLWIDTH").val("");//라벨가로 신규초기화	
+	$("#G3-OBJWIDTH").val("");//오브젝트가로 신규초기화	
+	$("#G3-OBJHEIGHT").val("");//오브젝트세로 신규초기화	
+	$("#G3-HIDDENYN").val("");//HIDDENYN 신규초기화	
+	$("#G3-EDITYN").val("");//EDITYN 신규초기화	
+	obj_G3_FNINIT.setValue(""); // FNINIT값 비우기
+	$("#G3-BRYN").val("");//BRYN 신규초기화	
+	$("#G3-FORMAT").val("");//FORMAT 신규초기화	
+	$("#G3-FOOTERNM").val("");//FOOTERNM 신규초기화	
+	$("#G3-ICONNM").val("");//ICONNM 신규초기화	
+	$("#G3-ICONSTYLE").val("");//ICONSTYLE 신규초기화	
+	$("#G3-LBLSTYLE").val("");//LBLSTYLE 신규초기화	
+	$("#G3-OBJSTYLE").val("");//OBJSTYLE 신규초기화	
+	$("#G3-OBJ2STYLE").val("");//OBJ2STYLE 신규초기화	
+	$("#G3-ADDDT").text("");//ADDDT 신규초기화
+	$("#G3-ADDID").text("");//ADDID 신규초기화
+	$("#G3-MODDT").text("");//MODDT 신규초기화
+	$("#G3-MODID").text("");//MODID 신규초기화
+	alog("DETAILNew30---------------end");
+}
 //FORMVIEW DELETE
 function G3_DELETE(token){
 	alog("G3_DELETE---------------start");
@@ -1022,116 +1175,6 @@ function G3_DELETE(token){
 		}
 	});
 }
-//디테일 검색	
-function G3_SEARCH(tinput,token){
-       alog("(FORMVIEW) G3_SEARCH---------------start");
-
-	//post 만들기
-	sendFormData = new FormData($("#condition")[0]);
-	var conAllData = "";
-	if(typeof tinput != "undefined" && tinput != null){
-		var tKeys = tinput.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],tinput.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ tinput.get(tKeys[i])); 
-		}
-	}
-
-	$.ajax({
-        type : "POST",
-        url : url_G3_SEARCH+"&TOKEN=" + token + "&" + conAllData ,
-        data : sendFormData,
-		processData: false,
-		contentType: false,
-        dataType: "json",
-        success: function(data){
-            alog(data);
-
-			if(data && data.RTN_CD == "200"){
-				if(data.RTN_DATA){
-					msgNotice("정상적으로 조회되었습니다.",1);
-				}else{
-					msgNotice("정상적으로 조회되었으나 데이터가 없습니다.",2);
-					return;
-				}
-			}else{
-				msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
-				return;
-			}
-
-            //모드 변경하기
-            $("#G3-CTLCUD").val("R");
-			//SETVAL  가져와서 세팅
-			$("#G3-PJTSEQ").val(data.RTN_DATA.PJTSEQ);//PJTSEQ 변수세팅
-			$("#G3-PGMSEQ").val(data.RTN_DATA.PGMSEQ);//PGMSEQ 변수세팅
-			$("#G3-GRPSEQ").val(data.RTN_DATA.GRPSEQ);//GRPSEQ 변수세팅
-			$("#G3-IOSEQ").val(data.RTN_DATA.IOSEQ);//IOSEQ 변수세팅
-			$("#G3-COLORD").val(data.RTN_DATA.COLORD);//COLORD 변수세팅
-			$("#G3-COLID").val(data.RTN_DATA.COLID);//컬럼ID 변수세팅
-			$("#G3-COLNM").val(data.RTN_DATA.COLNM);//컬럼명 변수세팅
-			$("#G3-DATATYPE").val(data.RTN_DATA.DATATYPE);//데이터타입 변수세팅
-			$("#G3-VALIDSEQ").val(data.RTN_DATA.VALIDSEQ);//VALIDSEQ 변수세팅
-			$("#G3-DATASIZE").val(data.RTN_DATA.DATASIZE);//데이터사이즈 변수세팅
-			$("#G3-OBJTYPE").val(data.RTN_DATA.OBJTYPE);//오브젝트타입 변수세팅
-			$("#G3-POPUP").val(data.RTN_DATA.POPUP);//POPUP 변수세팅
-			//KEYYN 값넣기
-			$('input:radio[name="G3-KEYYN"]').prop('checked', false);//기존 선택사항 모두 초기화
-			if(data.RTN_DATA.KEYYN != ""){
-				$('input:radio[name="G3-KEYYN"][value="' + data.RTN_DATA.KEYYN + '"]').prop('checked', true);
-			}
-			//SEQYN 값넣기
-			$('input:radio[name="G3-SEQYN"]').prop('checked', false);//기존 선택사항 모두 초기화
-			if(data.RTN_DATA.SEQYN != ""){
-				$('input:radio[name="G3-SEQYN"][value="' + data.RTN_DATA.SEQYN + '"]').prop('checked', true);
-			}
-			//LBLHIDDENYN 값넣기
-			$('input:radio[name="G3-LBLHIDDENYN"]').prop('checked', false);//기존 선택사항 모두 초기화
-			if(data.RTN_DATA.LBLHIDDENYN != ""){
-				$('input:radio[name="G3-LBLHIDDENYN"][value="' + data.RTN_DATA.LBLHIDDENYN + '"]').prop('checked', true);
-			}
-			$("#G3-LBLWIDTH").val(data.RTN_DATA.LBLWIDTH);//라벨가로 변수세팅
-			$("#G3-LBLALIGN").val(data.RTN_DATA.LBLALIGN);//LBLALIGN 변수세팅
-			$("#G3-OBJWIDTH").val(data.RTN_DATA.OBJWIDTH);//오브젝트가로 변수세팅
-			$("#G3-OBJHEIGHT").val(data.RTN_DATA.OBJHEIGHT);//오브젝트세로 변수세팅
-			$("#G3-OBJALIGN").val(data.RTN_DATA.OBJALIGN);//가로정렬 변수세팅
-			//HIDDENYN 값넣기
-			$('input:radio[name="G3-HIDDENYN"]').prop('checked', false);//기존 선택사항 모두 초기화
-			if(data.RTN_DATA.HIDDENYN != ""){
-				$('input:radio[name="G3-HIDDENYN"][value="' + data.RTN_DATA.HIDDENYN + '"]').prop('checked', true);
-			}
-			//EDITYN 값넣기
-			$('input:radio[name="G3-EDITYN"]').prop('checked', false);//기존 선택사항 모두 초기화
-			if(data.RTN_DATA.EDITYN != ""){
-				$('input:radio[name="G3-EDITYN"][value="' + data.RTN_DATA.EDITYN + '"]').prop('checked', true);
-			}
-		//CodeMirror SetVal
-		obj_G3_FNINIT.setValue(data.RTN_DATA.FNINIT); //FNINIT 
-			//BRYN 값넣기
-			$('input:radio[name="G3-BRYN"]').prop('checked', false);//기존 선택사항 모두 초기화
-			if(data.RTN_DATA.BRYN != ""){
-				$('input:radio[name="G3-BRYN"][value="' + data.RTN_DATA.BRYN + '"]').prop('checked', true);
-			}
-			$("#G3-FORMAT").val(data.RTN_DATA.FORMAT);//FORMAT 변수세팅
-			$("#G3-FOOTERMATH").val(data.RTN_DATA.FOOTERMATH);//FOOTERMATH 변수세팅
-			$("#G3-FOOTERNM").val(data.RTN_DATA.FOOTERNM);//FOOTERNM 변수세팅
-			$("#G3-ICONNM").val(data.RTN_DATA.ICONNM);//ICONNM 변수세팅
-			$("#G3-ICONSTYLE").val(data.RTN_DATA.ICONSTYLE);//ICONSTYLE 변수세팅
-			$("#G3-LBLSTYLE").val(data.RTN_DATA.LBLSTYLE);//LBLSTYLE 변수세팅
-			$("#G3-OBJSTYLE").val(data.RTN_DATA.OBJSTYLE);//OBJSTYLE 변수세팅
-			$("#G3-OBJ2STYLE").val(data.RTN_DATA.OBJ2STYLE);//OBJ2STYLE 변수세팅
-	$("#G3-ADDDT").text(data.RTN_DATA.ADDDT);//ADDDT 변수세팅
-	$("#G3-ADDID").text(data.RTN_DATA.ADDID);//ADDID 변수세팅
-	$("#G3-MODDT").text(data.RTN_DATA.MODDT);//MODDT 변수세팅
-	$("#G3-MODID").text(data.RTN_DATA.MODID);//MODID 변수세팅
-        },
-        error: function(error){
-            alog("Error:");
-            alog(error);
-        }
-    });
-    alog("(FORMVIEW) G3_SEARCH---------------end");
-
-}
 function G3_MODIFY(){
        alog("[FromView] G3_MODIFY---------------start");
 	if( $("#G3-CTLCUD").val() == "C" ){
@@ -1145,47 +1188,4 @@ function G3_MODIFY(){
 
 	$("#G3-CTLCUD").val("U");
        alog("[FromView] G3_MODIFY---------------end");
-}
-//	
-function G3_NEW(){
-	alog("[FromView] G3_NEW---------------start");
-	$("#G3-CTLCUD").val("C");
-	//PMGIO 로직
-	$("#G3-PJTSEQ").val("");//PJTSEQ 신규초기화	
-	$("#G3-PGMSEQ").val("");//PGMSEQ 신규초기화	
-	$("#G3-GRPSEQ").val("");//GRPSEQ 신규초기화	
-	$("#G3-IOSEQ").val("");//IOSEQ 신규초기화	
-	$("#G3-COLORD").val("");//COLORD 신규초기화	
-	$("#G3-COLID").val("");//컬럼ID 신규초기화	
-	$("#G3-COLNM").val("");//컬럼명 신규초기화	
-	$("#G3-DATASIZE").val("");//데이터사이즈 신규초기화	
-	$("#G3-POPUP").val("");//POPUP 신규초기화	
-	$("#G3-KEYYN").val("");//KEYYN 신규초기화	
-	$("#G3-SEQYN").val("");//SEQYN 신규초기화	
-	$("#G3-LBLHIDDENYN").val("");//LBLHIDDENYN 신규초기화	
-	$("#G3-LBLWIDTH").val("");//라벨가로 신규초기화	
-	$("#G3-OBJWIDTH").val("");//오브젝트가로 신규초기화	
-	$("#G3-OBJHEIGHT").val("");//오브젝트세로 신규초기화	
-	$("#G3-HIDDENYN").val("");//HIDDENYN 신규초기화	
-	$("#G3-EDITYN").val("");//EDITYN 신규초기화	
-	obj_G3_FNINIT.setValue(""); // FNINIT값 비우기
-	$("#G3-BRYN").val("");//BRYN 신규초기화	
-	$("#G3-FORMAT").val("");//FORMAT 신규초기화	
-	$("#G3-FOOTERNM").val("");//FOOTERNM 신규초기화	
-	$("#G3-ICONNM").val("");//ICONNM 신규초기화	
-	$("#G3-ICONSTYLE").val("");//ICONSTYLE 신규초기화	
-	$("#G3-LBLSTYLE").val("");//LBLSTYLE 신규초기화	
-	$("#G3-OBJSTYLE").val("");//OBJSTYLE 신규초기화	
-	$("#G3-OBJ2STYLE").val("");//OBJ2STYLE 신규초기화	
-	$("#G3-ADDDT").text("");//ADDDT 신규초기화
-	$("#G3-ADDID").text("");//ADDID 신규초기화
-	$("#G3-MODDT").text("");//MODDT 신규초기화
-	$("#G3-MODID").text("");//MODID 신규초기화
-	alog("DETAILNew30---------------end");
-}
-//사용자정의함수 : 사용자정의
-function G3_USERDEF(token){
-	alog("G3_USERDEF-----------------start");
-
-	alog("G3_USERDEF-----------------end");
 }

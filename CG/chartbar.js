@@ -494,26 +494,6 @@ function G5_INIT(){
 	alog("G5_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
-// CONDITIONSearch	
-function G1_SEARCHALL(token){
-	alog("G1_SEARCHALL--------------------------start");
-	//폼의 모든값 구하기
-	var ConAllData = $( "#condition" ).serialize();
-	alog("ConAllData:" + ConAllData);
-	//json : G1
-			lastinputG2 = new HashMap(); //챠트
-				lastinputG3 = new HashMap(); //PIE
-		//  호출
-	G2_SEARCH(lastinputG2,token);
-	//  호출
-	G3_SEARCH(lastinputG3,token);
-	alog("G1_SEARCHALL--------------------------end");
-}
-//검색조건 초기화
-function G1_RESET(){
-	alog("G1_RESET--------------------------start");
-	$('#condition')[0].reset();
-}
 //컨디션, 저장	
 function G1_SAVE(token){
  alog("G1_SAVE-------------------start");
@@ -545,6 +525,26 @@ function G1_SAVE(token){
 		}
 	});
 	alog("G1_SAVE-------------------end");	
+}
+// CONDITIONSearch	
+function G1_SEARCHALL(token){
+	alog("G1_SEARCHALL--------------------------start");
+	//폼의 모든값 구하기
+	var ConAllData = $( "#condition" ).serialize();
+	alog("ConAllData:" + ConAllData);
+	//json : G1
+			lastinputG2 = new HashMap(); //챠트
+				lastinputG3 = new HashMap(); //PIE
+		//  호출
+	G2_SEARCH(lastinputG2,token);
+	//  호출
+	G3_SEARCH(lastinputG3,token);
+	alog("G1_SEARCHALL--------------------------end");
+}
+//검색조건 초기화
+function G1_RESET(){
+	alog("G1_RESET--------------------------start");
+	$('#condition')[0].reset();
 }
 //그리드 조회(챠트)	
 function G2_SEARCH(tinput,token){
@@ -785,6 +785,11 @@ function G4_SAVE(token){
 	
 	alog("G4_SAVE()------------end");
 }
+//새로고침	
+function G4_RELOAD(token){
+  alog("G4_RELOAD-----------------start");
+  G4_SEARCH(lastinputG4,token);
+}
 
 
 
@@ -860,11 +865,6 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
-//새로고침	
-function G4_RELOAD(token){
-  alog("G4_RELOAD-----------------start");
-  G4_SEARCH(lastinputG4,token);
-}
 
 
 
@@ -940,11 +940,6 @@ function G5_SEARCH(tinput,token){
         alog("G5_SEARCH()------------end");
     }
 
-//새로고침	
-function G5_RELOAD(token){
-  alog("G5_RELOAD-----------------start");
-  G5_SEARCH(lastinputG5,token);
-}
 	//PIE상속
 function G5_SAVE(token){
 	alog("G5_SAVE()------------start");
@@ -991,4 +986,9 @@ function G5_SAVE(token){
 	});
 	
 	alog("G5_SAVE()------------end");
+}
+//새로고침	
+function G5_RELOAD(token){
+  alog("G5_RELOAD-----------------start");
+  G5_SEARCH(lastinputG5,token);
 }

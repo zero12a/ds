@@ -479,6 +479,11 @@ function G5_INIT(){
 	alog("G5_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+//검색조건 초기화
+function G2_RESET(){
+	alog("G2_RESET--------------------------start");
+	$('#condition')[0].reset();
+}
 //, 저장	
 function G2_SAVE(token){
  alog("G2_SAVE-------------------start");
@@ -523,11 +528,6 @@ function G2_SEARCHALL(token){
 	G4_SEARCH(lastinputG4,token);
 	alog("G2_SEARCHALL--------------------------end");
 }
-//검색조건 초기화
-function G2_RESET(){
-	alog("G2_RESET--------------------------start");
-	$('#condition')[0].reset();
-}
 //엑셀 다운받기 - 렌더링 후값인 NM (배치)
 function G4_EXCEL(tinput,token){
 	alog("G4_EXCEL()------------start");
@@ -551,12 +551,7 @@ function G4_EXCEL(tinput,token){
 
 
 	alog("G4_EXCEL()------------end");
-}//새로고침	
-function G4_RELOAD(token){
-  alog("G4_RELOAD-----------------start");
-  G4_SEARCH(lastinputG4,token);
-}
-//그리드 조회(배치)	
+}//그리드 조회(배치)	
 function G4_SEARCH(tinput,token){
 	alog("G4_SEARCH()------------start");
 
@@ -644,6 +639,11 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
+//새로고침	
+function G4_RELOAD(token){
+  alog("G4_RELOAD-----------------start");
+  G4_SEARCH(lastinputG4,token);
+}
 //그리드 조회(로그)	
 function G5_SEARCH(tinput,token){
 	alog("G5_SEARCH()------------start");
@@ -732,6 +732,11 @@ function G5_SEARCH(tinput,token){
         alog("G5_SEARCH()------------end");
     }
 
+//새로고침	
+function G5_RELOAD(token){
+  alog("G5_RELOAD-----------------start");
+  G5_SEARCH(lastinputG5,token);
+}
 //로그
 function G5_CHKSAVE(token){
 	alog("G5_CHKSAVE()------------start");
@@ -790,9 +795,4 @@ function G5_CHKSAVE(token){
 	});
 	
 	alog("G5_CHKSAVE()------------end");
-}
-//새로고침	
-function G5_RELOAD(token){
-  alog("G5_RELOAD-----------------start");
-  G5_SEARCH(lastinputG5,token);
 }

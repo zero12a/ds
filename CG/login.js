@@ -178,20 +178,6 @@ function G1_RESET(){
 	alog("G1_RESET--------------------------start");
 	$('#condition')[0].reset();
 }
-function G2_EDIT(){
-       alog("[FromView] G2_EDIT---------------start");
-	if( $("#G2-CTLCUD").val() == "C" ){
-		alert("조회 후 수정 가능합니다. 신규 모드에서는 수정할 수 없습니다.")
-		return;
-	}
-	if( $("#G2-CTLCUD").val() == "D" ){
-		alert("조회 후 수정 가능합니다. 삭제 모드에서는 수정할 수 없습니다.")
-		return;
-	}
-
-	$("#G2-CTLCUD").val("U");
-       alog("[FromView] G2_EDIT---------------end");
-}
 //G2_SAVE
 //IO_FILE_YN = V/, G/N	
 //IO_FILE_YN = N	
@@ -257,6 +243,20 @@ function G2_SAVE(token){
 			alog(error);
 		}
 	});
+}
+function G2_EDIT(){
+       alog("[FromView] G2_EDIT---------------start");
+	if( $("#G2-CTLCUD").val() == "C" ){
+		alert("조회 후 수정 가능합니다. 신규 모드에서는 수정할 수 없습니다.")
+		return;
+	}
+	if( $("#G2-CTLCUD").val() == "D" ){
+		alert("조회 후 수정 가능합니다. 삭제 모드에서는 수정할 수 없습니다.")
+		return;
+	}
+
+	$("#G2-CTLCUD").val("U");
+       alog("[FromView] G2_EDIT---------------end");
 }
 //디테일 검색	
 function G2_SEARCH(tinput,token){

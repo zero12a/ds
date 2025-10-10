@@ -302,23 +302,6 @@ function F3_INIT(){
   alog("F3_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
-// CONDITIONSearch	
-function C1_SEARCHALL(token){
-	alog("C1_SEARCHALL--------------------------start");
-	//폼의 모든값 구하기
-	var ConAllData = $( "#condition" ).serialize();
-	alog("ConAllData:" + ConAllData);
-	//json : C1
-			lastinputG2 = new HashMap(); //목록
-		//  호출
-	G2_SEARCH(lastinputG2,token);
-	alog("C1_SEARCHALL--------------------------end");
-}
-//검색조건 초기화
-function C1_RESET(){
-	alog("C1_RESET--------------------------start");
-	$('#condition')[0].reset();
-}
 //조회조건, 저장	
 function C1_SAVE(token){
  alog("C1_SAVE-------------------start");
@@ -355,7 +338,43 @@ function C1_SAVE(token){
 	});
 	alog("C1_SAVE-------------------end");	
 }
-	//목록
+// CONDITIONSearch	
+function C1_SEARCHALL(token){
+	alog("C1_SEARCHALL--------------------------start");
+	//폼의 모든값 구하기
+	var ConAllData = $( "#condition" ).serialize();
+	alog("ConAllData:" + ConAllData);
+	//json : C1
+			lastinputG2 = new HashMap(); //목록
+		//  호출
+	G2_SEARCH(lastinputG2,token);
+	alog("C1_SEARCHALL--------------------------end");
+}
+//검색조건 초기화
+function C1_RESET(){
+	alog("C1_RESET--------------------------start");
+	$('#condition')[0].reset();
+}
+    function G2_ROWDELETE(){	
+        alog("G2_ROWDELETE()------------start");
+        delRow(mygridG2);
+        alog("G2_ROWDELETE()------------start");
+    }
+//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
+}
+//행추가3 (목록)	
+//그리드 행추가 : 목록
+	function G2_ROWADD(){
+		if( !(lastinputG2)){
+			msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
+		}else{
+			var tCols = ["","","","","","","","","","","",""];//초기값
+			addRow(mygridG2,tCols);
+		}
+	}	//목록
 function G2_SAVE(token){
 	alog("G2_SAVE()------------start");
 	tgrid = mygridG2;
@@ -406,11 +425,6 @@ function G2_SAVE(token){
 	
 	alog("G2_SAVE()------------end");
 }
-    function G2_ROWDELETE(){	
-        alog("G2_ROWDELETE()------------start");
-        delRow(mygridG2);
-        alog("G2_ROWDELETE()------------start");
-    }
 
 
 
@@ -491,21 +505,14 @@ function G2_SEARCH(tinput,token){
         alog("G2_SEARCH()------------end");
     }
 
-//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
+//	
+function F3_NEW(){
+	alog("[FromView] F3_NEW---------------start");
+	$("#F3-CTLCUD").val("C");
+	//PMGIO 로직
+	alog("DETAILNew30---------------end");
 }
-//행추가3 (목록)	
-//그리드 행추가 : 목록
-	function G2_ROWADD(){
-		if( !(lastinputG2)){
-			msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
-		}else{
-			var tCols = ["","","","","","","","","","","",""];//초기값
-			addRow(mygridG2,tCols);
-		}
-	}//FORMVIEW DELETE
+//FORMVIEW DELETE
 function F3_DELETE(token){
 	alog("F3_DELETE---------------start");
 
@@ -560,7 +567,25 @@ function F3_DELETE(token){
 		}
 	});
 }
-//디테일 검색	
+function F3_MODIFY(){
+       alog("[FromView] F3_MODIFY---------------start");
+	if( $("#F3-CTLCUD").val() == "C" ){
+		alert("조회 후 수정 가능합니다. 신규 모드에서는 수정할 수 없습니다.")
+		return;
+	}
+	if( $("#F3-CTLCUD").val() == "D" ){
+		alert("조회 후 수정 가능합니다. 삭제 모드에서는 수정할 수 없습니다.")
+		return;
+	}
+
+	$("#F3-CTLCUD").val("U");
+       alog("[FromView] F3_MODIFY---------------end");
+}
+//새로고침	
+function F3_RELOAD(token){
+	alog("F3_RELOAD-----------------start");
+	F3_SEARCH(lastinputF3,token);
+}//디테일 검색	
 function F3_SEARCH(tinput,token){
        alog("(FORMVIEW) F3_SEARCH---------------start");
 
@@ -609,32 +634,7 @@ function F3_SEARCH(tinput,token){
     alog("(FORMVIEW) F3_SEARCH---------------end");
 
 }
-function F3_MODIFY(){
-       alog("[FromView] F3_MODIFY---------------start");
-	if( $("#F3-CTLCUD").val() == "C" ){
-		alert("조회 후 수정 가능합니다. 신규 모드에서는 수정할 수 없습니다.")
-		return;
-	}
-	if( $("#F3-CTLCUD").val() == "D" ){
-		alert("조회 후 수정 가능합니다. 삭제 모드에서는 수정할 수 없습니다.")
-		return;
-	}
-
-	$("#F3-CTLCUD").val("U");
-       alog("[FromView] F3_MODIFY---------------end");
-}
-//	
-function F3_NEW(){
-	alog("[FromView] F3_NEW---------------start");
-	$("#F3-CTLCUD").val("C");
-	//PMGIO 로직
-	alog("DETAILNew30---------------end");
-}
-//새로고침	
-function F3_RELOAD(token){
-	alog("F3_RELOAD-----------------start");
-	F3_SEARCH(lastinputF3,token);
-}//F3_SAVE
+//F3_SAVE
 //IO_FILE_YN = V/, G/N	
 //IO_FILE_YN = N	
 function F3_SAVE(token){	

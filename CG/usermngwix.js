@@ -798,6 +798,11 @@ function G4_INIT(){
 	alog("G4_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+//검색조건 초기화
+function C1_RESET(){
+	alog("C1_RESET--------------------------start");
+	$('#condition')[0].reset();
+}
 //조건1, 저장	
 function C1_SAVE(token){
  alog("C1_SAVE-------------------start");
@@ -842,25 +847,6 @@ function C1_SEARCHALL(token){
 	G2_SEARCH(lastinputG2,token);
 	alog("C1_SEARCHALL--------------------------end");
 }
-//검색조건 초기화
-function C1_RESET(){
-	alog("C1_RESET--------------------------start");
-	$('#condition')[0].reset();
-}
-//사용자정의함수 : V
-function G2_HIDDENCOL(token){
-	alog("G2_HIDDENCOL-----------------start");
-
-	if(isToggleHiddenColG2){
-		$$("wixdtG2").hideColumn("USERSEQ");
-		isToggleHiddenColG2 = false;
-	}else{
-		$$("wixdtG2").showColumn("USERSEQ");
-			isToggleHiddenColG2 = true;
-		}
-
-		alog("G2_HIDDENCOL-----------------end");
-	}
 //사용자1
 function G2_SAVE(token){
 	alog("G2_SAVE()------------start");
@@ -935,6 +921,20 @@ function G2_SAVE(token){
 	
 	alog("G2_SAVE()------------end");
 }
+//사용자정의함수 : V
+function G2_HIDDENCOL(token){
+	alog("G2_HIDDENCOL-----------------start");
+
+	if(isToggleHiddenColG2){
+		$$("wixdtG2").hideColumn("USERSEQ");
+		isToggleHiddenColG2 = false;
+	}else{
+		$$("wixdtG2").showColumn("USERSEQ");
+			isToggleHiddenColG2 = true;
+		}
+
+		alog("G2_HIDDENCOL-----------------end");
+	}
 //그리드 조회(사용자1)	
 function G2_SEARCH(tinput,token){
 	alog("G2_SEARCH()------------start");
@@ -1023,10 +1023,21 @@ function G2_SEARCH(tinput,token){
         alog("G2_SEARCH()------------end");
     }
 
-//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
+//-
+function G2_ROWDELETE(tinput,token){
+	alog("G2_ROWDELETE()------------start");
+
+    rowId = $$("wixdtG2").getSelectedId(false);
+    alog(rowId);
+    if(typeof rowId != "undefined"){
+        $$("wixdtG2").addRowCss(rowId, "fontStateDelete");
+
+        rowItem = $$("wixdtG2").getItem(rowId);
+        rowItem.changeState = true;
+        rowItem.changeCud = "deleted";
+    }else{
+        alert("삭제할 행을 선택하세요.");
+    }
 }
 //사용자1
 function G2_USERDEF(token){
@@ -1138,7 +1149,37 @@ function G2_ROWADD(tinput,token){
     $$("wixdtG2").addRowCss(rowId, "fontStateInsert");
     alog("add row rowId : " + rowId);
 }
-//사용자1
+//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
+}
+//엑셀 다운받기 - 렌더링 후값인 NM (사용자1)
+function G2_EXCEL(tinput,token){
+	alog("G2_EXCEL()------------start");
+
+	webix.toExcel($$("wixdtG2"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"USERSEQ": {header: "USERSEQ"}
+,			"EMAIL": {header: "이메일"}
+,			"PASSWD": {header: "PASSWD"}
+,			"EMAILVALIDYN": {header: "이메일인증"}
+,			"LASTPWCHGDT": {header: "비번변경일"}
+,			"PWFAILCNT": {header: "로그인실패횟수"}
+,			"LOCKYN": {header: "잠금유무"}
+,			"FREEZEDT": {header: "잠금대기시간"}
+,			"LOCKDT": {header: "잠긴시간"}
+,			"SERVERSEQ": {header: "SERVERSEQ"}
+,			"ADDDT": {header: "ADDDT"}
+,			"MODDT": {header: "수정일"}
+			}
+		}   
+	);
+
+
+	alog("G2_EXCEL()------------end");
+}//사용자1
 function G2_CHKSAVE(token){
 	alog("G2_CHKSAVE()------------start");
 
@@ -1197,48 +1238,19 @@ function G2_CHKSAVE(token){
 	
 	alog("G2_CHKSAVE()------------end");
 }
-//-
-function G2_ROWDELETE(tinput,token){
-	alog("G2_ROWDELETE()------------start");
+//사용자정의함수 : V
+function G3_HIDDENCOL(token){
+	alog("G3_HIDDENCOL-----------------start");
 
-    rowId = $$("wixdtG2").getSelectedId(false);
-    alog(rowId);
-    if(typeof rowId != "undefined"){
-        $$("wixdtG2").addRowCss(rowId, "fontStateDelete");
+	if(isToggleHiddenColG3){
+		isToggleHiddenColG3 = false;
+	}else{
+			isToggleHiddenColG3 = true;
+		}
 
-        rowItem = $$("wixdtG2").getItem(rowId);
-        rowItem.changeState = true;
-        rowItem.changeCud = "deleted";
-    }else{
-        alert("삭제할 행을 선택하세요.");
-    }
-}
-//엑셀 다운받기 - 렌더링 후값인 NM (사용자1)
-function G2_EXCEL(tinput,token){
-	alog("G2_EXCEL()------------start");
-
-	webix.toExcel($$("wixdtG2"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"USERSEQ": {header: "USERSEQ"}
-,			"EMAIL": {header: "이메일"}
-,			"PASSWD": {header: "PASSWD"}
-,			"EMAILVALIDYN": {header: "이메일인증"}
-,			"LASTPWCHGDT": {header: "비번변경일"}
-,			"PWFAILCNT": {header: "로그인실패횟수"}
-,			"LOCKYN": {header: "잠금유무"}
-,			"FREEZEDT": {header: "잠금대기시간"}
-,			"LOCKDT": {header: "잠긴시간"}
-,			"SERVERSEQ": {header: "SERVERSEQ"}
-,			"ADDDT": {header: "ADDDT"}
-,			"MODDT": {header: "수정일"}
-			}
-		}   
-	);
-
-
-	alog("G2_EXCEL()------------end");
-}//그리드 조회(FILE저장소)	
+		alog("G3_HIDDENCOL-----------------end");
+	}
+//그리드 조회(FILE저장소)	
 function G3_SEARCH(tinput,token){
 	alog("G3_SEARCH()------------start");
 
@@ -1326,10 +1338,21 @@ function G3_SEARCH(tinput,token){
         alog("G3_SEARCH()------------end");
     }
 
-//새로고침	
-function G3_RELOAD(token){
-  alog("G3_RELOAD-----------------start");
-  G3_SEARCH(lastinputG3,token);
+//-
+function G3_ROWDELETE(tinput,token){
+	alog("G3_ROWDELETE()------------start");
+
+    rowId = $$("wixdtG3").getSelectedId(false);
+    alog(rowId);
+    if(typeof rowId != "undefined"){
+        $$("wixdtG3").addRowCss(rowId, "fontStateDelete");
+
+        rowItem = $$("wixdtG3").getItem(rowId);
+        rowItem.changeState = true;
+        rowItem.changeCud = "deleted";
+    }else{
+        alert("삭제할 행을 선택하세요.");
+    }
 }
 //사용자정의함수 : FS캐쉬반영
 function G3_PUBSUB(token){
@@ -1400,7 +1423,40 @@ function G3_ROWADD(tinput,token){
     $$("wixdtG3").addRowCss(rowId, "fontStateInsert");
     alog("add row rowId : " + rowId);
 }
-//FILE저장소
+//새로고침	
+function G3_RELOAD(token){
+  alog("G3_RELOAD-----------------start");
+  G3_SEARCH(lastinputG3,token);
+}
+//엑셀 다운받기 - 렌더링 후값인 NM (FILE저장소)
+function G3_EXCEL(tinput,token){
+	alog("G3_EXCEL()------------start");
+
+	webix.toExcel($$("wixdtG3"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"FILESTORESEQ": {header: "SEQ"}
+,			"USERSEQ": {header: "USERSEQ"}
+,			"STOREID": {header: "STOREID"}
+,			"STORENM": {header: "STORENM"}
+,			"STORETYPE": {header: "STORETYPE"}
+,			"UPLOADDIR": {header: "UPLOADDIR"}
+,			"READURL": {header: "READURL"}
+,			"CREKEY": {header: "CREKEY"}
+,			"CRESECRET": {header: "CRESECRET"}
+,			"REGION": {header: "REGION"}
+,			"BUCKET": {header: "BUCKET"}
+,			"ACL": {header: "ACL"}
+,			"USEYN": {header: "사용유무"}
+,			"ADDDT": {header: "ADDDT"}
+,			"MODDT": {header: "수정일"}
+			}
+		}   
+	);
+
+
+	alog("G3_EXCEL()------------end");
+}//FILE저장소
 function G3_CHKSAVE(token){
 	alog("G3_CHKSAVE()------------start");
 
@@ -1458,50 +1514,6 @@ function G3_CHKSAVE(token){
 	});
 	
 	alog("G3_CHKSAVE()------------end");
-}
-//엑셀 다운받기 - 렌더링 후값인 NM (FILE저장소)
-function G3_EXCEL(tinput,token){
-	alog("G3_EXCEL()------------start");
-
-	webix.toExcel($$("wixdtG3"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"FILESTORESEQ": {header: "SEQ"}
-,			"USERSEQ": {header: "USERSEQ"}
-,			"STOREID": {header: "STOREID"}
-,			"STORENM": {header: "STORENM"}
-,			"STORETYPE": {header: "STORETYPE"}
-,			"UPLOADDIR": {header: "UPLOADDIR"}
-,			"READURL": {header: "READURL"}
-,			"CREKEY": {header: "CREKEY"}
-,			"CRESECRET": {header: "CRESECRET"}
-,			"REGION": {header: "REGION"}
-,			"BUCKET": {header: "BUCKET"}
-,			"ACL": {header: "ACL"}
-,			"USEYN": {header: "사용유무"}
-,			"ADDDT": {header: "ADDDT"}
-,			"MODDT": {header: "수정일"}
-			}
-		}   
-	);
-
-
-	alog("G3_EXCEL()------------end");
-}//-
-function G3_ROWDELETE(tinput,token){
-	alog("G3_ROWDELETE()------------start");
-
-    rowId = $$("wixdtG3").getSelectedId(false);
-    alog(rowId);
-    if(typeof rowId != "undefined"){
-        $$("wixdtG3").addRowCss(rowId, "fontStateDelete");
-
-        rowItem = $$("wixdtG3").getItem(rowId);
-        rowItem.changeState = true;
-        rowItem.changeCud = "deleted";
-    }else{
-        alert("삭제할 행을 선택하세요.");
-    }
 }
 //FILE저장소
 function G3_SAVE(token){
@@ -1577,19 +1589,39 @@ function G3_SAVE(token){
 	
 	alog("G3_SAVE()------------end");
 }
-//사용자정의함수 : V
-function G3_HIDDENCOL(token){
-	alog("G3_HIDDENCOL-----------------start");
+//새로고침	
+function G4_RELOAD(token){
+  alog("G4_RELOAD-----------------start");
+  G4_SEARCH(lastinputG4,token);
+}
+//엑셀 다운받기 - 렌더링 후값인 NM (DB저장소)
+function G4_EXCEL(tinput,token){
+	alog("G4_EXCEL()------------start");
 
-	if(isToggleHiddenColG3){
-		isToggleHiddenColG3 = false;
-	}else{
-			isToggleHiddenColG3 = true;
-		}
+	webix.toExcel($$("wixdtG4"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"SVRSEQ": {header: "SERVERSEQ"}
+,			"SVRID": {header: "SVRID"}
+,			"SVRNM": {header: "SVRNM"}
+,			"PJTSEQ": {header: "PJTSEQ"}
+,			"USERSEQ": {header: "USERSEQ"}
+,			"DBDRIVER": {header: "DBDRIVER"}
+,			"DBHOST": {header: "DBHOST"}
+,			"DBPORT": {header: "DBPORT"}
+,			"DBNAME": {header: "DBNAME"}
+,			"DBUSRID": {header: "DBUSERID"}
+,			"DBUSRPW": {header: "DBUSERPW"}
+,			"USEYN": {header: "사용유무"}
+,			"ADDDT": {header: "ADDDT"}
+,			"MODDT": {header: "수정일"}
+			}
+		}   
+	);
 
-		alog("G3_HIDDENCOL-----------------end");
-	}
-//DB저장소
+
+	alog("G4_EXCEL()------------end");
+}//DB저장소
 function G4_CHKSAVE(token){
 	alog("G4_CHKSAVE()------------start");
 
@@ -1648,94 +1680,36 @@ function G4_CHKSAVE(token){
 	
 	alog("G4_CHKSAVE()------------end");
 }
-//사용자정의함수 : 사용자정의
-function G4_USERDEF(token){
-	alog("G4_USERDEF-----------------start");
+//사용자정의함수 : DS캐쉬반영
+function G4_PUBSUB(token){
+	alog("G4_PUBSUB-----------------start");
+alert("go");
+$.ajax({
+	type : "GET",
+	url : "/common/cg_cdeploy_pubsub.php?PUBSUB=config.DATASOURCE_CG&MSG=1" ,
+	dataType: "json",
+	async: false,
+	success: function(data){
+		alog("   gridG2 json return----------------------");
 
-	alog("G4_USERDEF-----------------end");
-}
-//
-//+
-function G4_ROWADD(tinput,token){
-	alog("G4_ROWADD()------------start");
+		//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+		if(data.RTN_CD =="200"){
+			msgNotice(data.RTN_MSG);
+		}else{
+			msgError(data.RTN_MSG + "(" + data.ERR_CD + ")",3);
+		}
 
-	if( !(lastinputG4)		|| lastinputG4.get("G4-USERSEQ") == ""	){
-		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
-		return;
+		//alert("응답오케이:" + tableNm + ", " + colIndex);
+
+	},
+	error: function(error){
+		msgError("[PUBSUB] Ajax http 500 error ( " + error + " )",3);
+		//alog("[테이블목록] Ajax http 500 error ( " + data.RTN_MSG + " )");
 	}
-
-
-	var rowId =  webix.uid();
-
-	var rowData = {
-        id: rowId
-		,"SVRSEQ" : ""
-		,"SVRID" : ""
-		,"SVRNM" : ""
-		,"PJTSEQ" : ""
-		,"USERSEQ" : lastinputG4.get("G2-USERSEQ")
-		,"DBDRIVER" : ""
-		,"DBHOST" : ""
-		,"DBPORT" : ""
-		,"DBNAME" : ""
-		,"DBUSRID" : ""
-		,"DBUSRPW" : ""
-		,"USEYN" : ""
-		,"ADDDT" : ""
-		,"MODDT" : ""
-		, changeState: true
-		, changeCud: "inserted"
-	};
-
-
-	$$("wixdtG4").add(rowData,0);
-    $$("wixdtG4").addRowCss(rowId, "fontStateInsert");
-    alog("add row rowId : " + rowId);
+});
+	alog("G4_PUBSUB-----------------end");
 }
-//-
-function G4_ROWDELETE(tinput,token){
-	alog("G4_ROWDELETE()------------start");
-
-    rowId = $$("wixdtG4").getSelectedId(false);
-    alog(rowId);
-    if(typeof rowId != "undefined"){
-        $$("wixdtG4").addRowCss(rowId, "fontStateDelete");
-
-        rowItem = $$("wixdtG4").getItem(rowId);
-        rowItem.changeState = true;
-        rowItem.changeCud = "deleted";
-    }else{
-        alert("삭제할 행을 선택하세요.");
-    }
-}
-//엑셀 다운받기 - 렌더링 후값인 NM (DB저장소)
-function G4_EXCEL(tinput,token){
-	alog("G4_EXCEL()------------start");
-
-	webix.toExcel($$("wixdtG4"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"SVRSEQ": {header: "SERVERSEQ"}
-,			"SVRID": {header: "SVRID"}
-,			"SVRNM": {header: "SVRNM"}
-,			"PJTSEQ": {header: "PJTSEQ"}
-,			"USERSEQ": {header: "USERSEQ"}
-,			"DBDRIVER": {header: "DBDRIVER"}
-,			"DBHOST": {header: "DBHOST"}
-,			"DBPORT": {header: "DBPORT"}
-,			"DBNAME": {header: "DBNAME"}
-,			"DBUSRID": {header: "DBUSERID"}
-,			"DBUSRPW": {header: "DBUSERPW"}
-,			"USEYN": {header: "사용유무"}
-,			"ADDDT": {header: "ADDDT"}
-,			"MODDT": {header: "수정일"}
-			}
-		}   
-	);
-
-
-	alog("G4_EXCEL()------------end");
-}//DB저장소
+//DB저장소
 function G4_SAVE(token){
 	alog("G4_SAVE()------------start");
 
@@ -1909,37 +1883,63 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
-//새로고침	
-function G4_RELOAD(token){
-  alog("G4_RELOAD-----------------start");
-  G4_SEARCH(lastinputG4,token);
+//-
+function G4_ROWDELETE(tinput,token){
+	alog("G4_ROWDELETE()------------start");
+
+    rowId = $$("wixdtG4").getSelectedId(false);
+    alog(rowId);
+    if(typeof rowId != "undefined"){
+        $$("wixdtG4").addRowCss(rowId, "fontStateDelete");
+
+        rowItem = $$("wixdtG4").getItem(rowId);
+        rowItem.changeState = true;
+        rowItem.changeCud = "deleted";
+    }else{
+        alert("삭제할 행을 선택하세요.");
+    }
 }
-//사용자정의함수 : DS캐쉬반영
-function G4_PUBSUB(token){
-	alog("G4_PUBSUB-----------------start");
-alert("go");
-$.ajax({
-	type : "GET",
-	url : "/common/cg_cdeploy_pubsub.php?PUBSUB=config.DATASOURCE_CG&MSG=1" ,
-	dataType: "json",
-	async: false,
-	success: function(data){
-		alog("   gridG2 json return----------------------");
+//사용자정의함수 : 사용자정의
+function G4_USERDEF(token){
+	alog("G4_USERDEF-----------------start");
 
-		//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-		if(data.RTN_CD =="200"){
-			msgNotice(data.RTN_MSG);
-		}else{
-			msgError(data.RTN_MSG + "(" + data.ERR_CD + ")",3);
-		}
+	alog("G4_USERDEF-----------------end");
+}
+//
+//+
+function G4_ROWADD(tinput,token){
+	alog("G4_ROWADD()------------start");
 
-		//alert("응답오케이:" + tableNm + ", " + colIndex);
-
-	},
-	error: function(error){
-		msgError("[PUBSUB] Ajax http 500 error ( " + error + " )",3);
-		//alog("[테이블목록] Ajax http 500 error ( " + data.RTN_MSG + " )");
+	if( !(lastinputG4)		|| lastinputG4.get("G4-USERSEQ") == ""	){
+		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
+		return;
 	}
-});
-	alog("G4_PUBSUB-----------------end");
+
+
+	var rowId =  webix.uid();
+
+	var rowData = {
+        id: rowId
+		,"SVRSEQ" : ""
+		,"SVRID" : ""
+		,"SVRNM" : ""
+		,"PJTSEQ" : ""
+		,"USERSEQ" : lastinputG4.get("G2-USERSEQ")
+		,"DBDRIVER" : ""
+		,"DBHOST" : ""
+		,"DBPORT" : ""
+		,"DBNAME" : ""
+		,"DBUSRID" : ""
+		,"DBUSRPW" : ""
+		,"USEYN" : ""
+		,"ADDDT" : ""
+		,"MODDT" : ""
+		, changeState: true
+		, changeCud: "inserted"
+	};
+
+
+	$$("wixdtG4").add(rowData,0);
+    $$("wixdtG4").addRowCss(rowId, "fontStateInsert");
+    alog("add row rowId : " + rowId);
 }

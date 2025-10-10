@@ -316,6 +316,11 @@ function G3_INIT(){
   alog("G3_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+//검색조건 초기화
+function G1_RESET(){
+	alog("G1_RESET--------------------------start");
+	$('#condition')[0].reset();
+}
 //, 저장	
 function G1_SAVE(token){
  alog("G1_SAVE-------------------start");
@@ -365,11 +370,6 @@ function G1_USERDEF(token){
 	alog("G1_USERDEF-----------------start");
 
 	alog("G1_USERDEF-----------------end");
-}
-//검색조건 초기화
-function G1_RESET(){
-	alog("G1_RESET--------------------------start");
-	$('#condition')[0].reset();
 }
 //새로고침	
 function G2_RELOAD(token){
@@ -470,11 +470,7 @@ function G2_USERDEF(token){
 
 	alog("G2_USERDEF-----------------end");
 }
-//새로고침	
-function G3_RELOAD(token){
-	alog("G3_RELOAD-----------------start");
-	G3_SEARCH(lastinputG3,token);
-}//디테일 검색	
+//디테일 검색	
 function G3_SEARCH(tinput,token){
        alog("(FORMVIEW) G3_SEARCH---------------start");
 
@@ -525,4 +521,9 @@ function G3_SEARCH(tinput,token){
     });
     alog("(FORMVIEW) G3_SEARCH---------------end");
 
+}
+//새로고침	
+function G3_RELOAD(token){
+	alog("G3_RELOAD-----------------start");
+	G3_SEARCH(lastinputG3,token);
 }

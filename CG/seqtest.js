@@ -585,6 +585,11 @@ function G1_USERDEF(token){
 
 	alog("G1_USERDEF-----------------end");
 }
+//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
+}
 //행추가3 (TEST(mariadb))	
 //그리드 행추가 : TEST(mariadb)
 	function G2_ROWADD(){
@@ -720,120 +725,20 @@ function G2_SEARCH(tinput,token){
         alog("G2_SEARCH()------------end");
     }
 
-//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
+//사용자정의함수 : 사용자정의
+function G3_USERDEF(token){
+	alog("G3_USERDEF-----------------start");
+
+	alog("G3_USERDEF-----------------end");
 }
-function G3_BIND(data,token){
-	alog("(FORMVIEW) G3_BIND---------------start");
-
-	$( "#G3-MYSEQ" ).unbind(); //이벤트 제거 : MYSEQ
-	$( "#G3-MSG" ).unbind(); //이벤트 제거 : MSG
-	$("#G3-MYSEQ").val(data.get("G2-MYSEQ"));//MYSEQ 변수세팅
-	$("#G3-MSG").val(data.get("G2-MSG"));//MSG 변수세팅
-	//첫호출 이면 오브젝트에 이벤트 붙이기
-	if(!isBindEvent_G3){
-
-		//MYSEQ
-		$( "#G3-MYSEQ" ).keyup(function() {
-			alog("G3-MYSEQ change event.");
-			rid = lastinputG3.get("__ROWID");
-			cidx = mygridG2.getColIndexById("MYSEQ");
-			mygridG2.cells(rid,cidx).setValue($(this).val()); //값변경
-
-			//부모 row 상태변경
-			mygridG2.cells(rid,cidx).cell.wasChanged = true;
-			RowEditStatus = mygridG2.getUserData(rid,"!nativeeditor_status");
-			if( RowEditStatus != "inserted" && RowEditStatus != "deleted"){
-				mygridG2.setUserData(rid,"!nativeeditor_status","updated");
-				mygridG2.setRowTextBold(rid);	
-			}
-		});
-		//MSG
-		$( "#G3-MSG" ).keyup(function() {
-			alog("G3-MSG change event.");
-			rid = lastinputG3.get("__ROWID");
-			cidx = mygridG2.getColIndexById("MSG");
-			mygridG2.cells(rid,cidx).setValue($(this).val()); //값변경
-
-			//부모 row 상태변경
-			mygridG2.cells(rid,cidx).cell.wasChanged = true;
-			RowEditStatus = mygridG2.getUserData(rid,"!nativeeditor_status");
-			if( RowEditStatus != "inserted" && RowEditStatus != "deleted"){
-				mygridG2.setUserData(rid,"!nativeeditor_status","updated");
-				mygridG2.setRowTextBold(rid);	
-			}
-		});
-
-		//isBindEvent_G3 = true;
-	}
-	alog("(FORMVIEW) G3_BIND---------------end");
-
-}
-//G3_SAVE
-//IO_FILE_YN = V/, G/N	
-//IO_FILE_YN = N	
-function G3_SAVE(token){	
-	alog("G3_SAVE---------------start");
-
-	if( !( $("#G3-CTLCUD").val() == "C" || $("#G3-CTLCUD").val() == "U") ){
-		alert("신규 또는 수정 모드 진입 후 저장할 수 있습니다.")
-		return;
-	}
-
-
-
-	//post 만들기
-	sendFormData = new FormData($("#condition")[0]);
-	var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG3 != "undefined"  && lastinputG3 != null){
-		var tKeys = lastinputG3.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG3.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG3.get(tKeys[i])); 
-		}
-	}
-	//컨디션 radio, checkbox 만 재지정
-	//GRP SVC LOOP
-//폼뷰 G3는 params 객체에 직접 입력	
-	//폼에 파일 유무 : N
-	sendFormData.append("G3-CTLCUD",$("#G3-CTLCUD").val());
-	sendFormData.append("G3-MYSEQ",$("#G3-MYSEQ").val());	//MYSEQ 전송객체에 넣기
-	sendFormData.append("G3-MSG",$("#G3-MSG").val());	//MSG 전송객체에 넣기
-
-	$.ajax({
-		type : "POST",
-		url : url_G3_SAVE + "&TOKEN=" + token + "&" + conAllData,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		success: function(tdata){
-			//alog(tdata);
-			//data = jQuery.parseJSON(tdata);
-
-			saveToGroup(tdata);
-			//alert(data);
-			//if(data && data.RTN_CD == "200"){
-
-				//if(typeof(data.GRP_DATA) == "undefined" || data.GRP_DATA[0] == null || typeof(data.GRP_DATA[0].RTN_DATA) == "undefined"){
-					//msgNotice("오류를 발생하지 않았으나, 처리 내역이 없습니다.(GRP_DATA is null, SQL미등록)",1);
-				//}else{
-					//affectedRows = data.GRP_DATA[0].RTN_DATA;
-					//msgNotice("정상적으로 저장되었습니다. [영향받은건수:" + affectedRows + "]",1);
-				//}
-
-			//}else{
-				//msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
-			//}
-		},
-		error: function(error){
-			alog("Error:");
-			alog(error);
-		}
-	});
+//	
+function G3_NEW(){
+	alog("[FromView] G3_NEW---------------start");
+	$("#G3-CTLCUD").val("C");
+	//PMGIO 로직
+	$("#G3-MYSEQ").val("");//MYSEQ 신규초기화	
+	$("#G3-MSG").val("");//MSG 신규초기화	
+	alog("DETAILNew30---------------end");
 }
 //FORMVIEW DELETE
 function G3_DELETE(token){
@@ -904,7 +809,11 @@ function G3_MODIFY(){
 	$("#G3-CTLCUD").val("U");
        alog("[FromView] G3_MODIFY---------------end");
 }
-//디테일 검색	
+//새로고침	
+function G3_RELOAD(token){
+	alog("G3_RELOAD-----------------start");
+	G3_SEARCH(lastinputG3,token);
+}//디테일 검색	
 function G3_SEARCH(tinput,token){
        alog("(FORMVIEW) G3_SEARCH---------------start");
 
@@ -955,23 +864,113 @@ function G3_SEARCH(tinput,token){
     alog("(FORMVIEW) G3_SEARCH---------------end");
 
 }
-//사용자정의함수 : 사용자정의
-function G3_USERDEF(token){
-	alog("G3_USERDEF-----------------start");
+//G3_SAVE
+//IO_FILE_YN = V/, G/N	
+//IO_FILE_YN = N	
+function G3_SAVE(token){	
+	alog("G3_SAVE---------------start");
 
-	alog("G3_USERDEF-----------------end");
+	if( !( $("#G3-CTLCUD").val() == "C" || $("#G3-CTLCUD").val() == "U") ){
+		alert("신규 또는 수정 모드 진입 후 저장할 수 있습니다.")
+		return;
+	}
+
+
+
+	//post 만들기
+	sendFormData = new FormData($("#condition")[0]);
+	var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG3 != "undefined"  && lastinputG3 != null){
+		var tKeys = lastinputG3.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG3.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG3.get(tKeys[i])); 
+		}
+	}
+	//컨디션 radio, checkbox 만 재지정
+	//GRP SVC LOOP
+//폼뷰 G3는 params 객체에 직접 입력	
+	//폼에 파일 유무 : N
+	sendFormData.append("G3-CTLCUD",$("#G3-CTLCUD").val());
+	sendFormData.append("G3-MYSEQ",$("#G3-MYSEQ").val());	//MYSEQ 전송객체에 넣기
+	sendFormData.append("G3-MSG",$("#G3-MSG").val());	//MSG 전송객체에 넣기
+
+	$.ajax({
+		type : "POST",
+		url : url_G3_SAVE + "&TOKEN=" + token + "&" + conAllData,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		success: function(tdata){
+			//alog(tdata);
+			//data = jQuery.parseJSON(tdata);
+
+			saveToGroup(tdata);
+			//alert(data);
+			//if(data && data.RTN_CD == "200"){
+
+				//if(typeof(data.GRP_DATA) == "undefined" || data.GRP_DATA[0] == null || typeof(data.GRP_DATA[0].RTN_DATA) == "undefined"){
+					//msgNotice("오류를 발생하지 않았으나, 처리 내역이 없습니다.(GRP_DATA is null, SQL미등록)",1);
+				//}else{
+					//affectedRows = data.GRP_DATA[0].RTN_DATA;
+					//msgNotice("정상적으로 저장되었습니다. [영향받은건수:" + affectedRows + "]",1);
+				//}
+
+			//}else{
+				//msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
+			//}
+		},
+		error: function(error){
+			alog("Error:");
+			alog(error);
+		}
+	});
 }
-//	
-function G3_NEW(){
-	alog("[FromView] G3_NEW---------------start");
-	$("#G3-CTLCUD").val("C");
-	//PMGIO 로직
-	$("#G3-MYSEQ").val("");//MYSEQ 신규초기화	
-	$("#G3-MSG").val("");//MSG 신규초기화	
-	alog("DETAILNew30---------------end");
-}
-//새로고침	
-function G3_RELOAD(token){
-	alog("G3_RELOAD-----------------start");
-	G3_SEARCH(lastinputG3,token);
+function G3_BIND(data,token){
+	alog("(FORMVIEW) G3_BIND---------------start");
+
+	$( "#G3-MYSEQ" ).unbind(); //이벤트 제거 : MYSEQ
+	$( "#G3-MSG" ).unbind(); //이벤트 제거 : MSG
+	$("#G3-MYSEQ").val(data.get("G2-MYSEQ"));//MYSEQ 변수세팅
+	$("#G3-MSG").val(data.get("G2-MSG"));//MSG 변수세팅
+	//첫호출 이면 오브젝트에 이벤트 붙이기
+	if(!isBindEvent_G3){
+
+		//MYSEQ
+		$( "#G3-MYSEQ" ).keyup(function() {
+			alog("G3-MYSEQ change event.");
+			rid = lastinputG3.get("__ROWID");
+			cidx = mygridG2.getColIndexById("MYSEQ");
+			mygridG2.cells(rid,cidx).setValue($(this).val()); //값변경
+
+			//부모 row 상태변경
+			mygridG2.cells(rid,cidx).cell.wasChanged = true;
+			RowEditStatus = mygridG2.getUserData(rid,"!nativeeditor_status");
+			if( RowEditStatus != "inserted" && RowEditStatus != "deleted"){
+				mygridG2.setUserData(rid,"!nativeeditor_status","updated");
+				mygridG2.setRowTextBold(rid);	
+			}
+		});
+		//MSG
+		$( "#G3-MSG" ).keyup(function() {
+			alog("G3-MSG change event.");
+			rid = lastinputG3.get("__ROWID");
+			cidx = mygridG2.getColIndexById("MSG");
+			mygridG2.cells(rid,cidx).setValue($(this).val()); //값변경
+
+			//부모 row 상태변경
+			mygridG2.cells(rid,cidx).cell.wasChanged = true;
+			RowEditStatus = mygridG2.getUserData(rid,"!nativeeditor_status");
+			if( RowEditStatus != "inserted" && RowEditStatus != "deleted"){
+				mygridG2.setUserData(rid,"!nativeeditor_status","updated");
+				mygridG2.setRowTextBold(rid);	
+			}
+		});
+
+		//isBindEvent_G3 = true;
+	}
+	alog("(FORMVIEW) G3_BIND---------------end");
+
 }

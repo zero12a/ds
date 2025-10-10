@@ -777,6 +777,11 @@ function G2_SEARCH(tinput,token){
         alog("G2_SEARCH()------------end");
     }
 
+//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
+}
 //엑셀 다운받기 - 렌더링 후값인 NM (로그인)
 function G2_EXCEL(tinput,token){
 	alog("G2_EXCEL()------------start");
@@ -814,11 +819,6 @@ function G2_HIDDENCOL(token){
 
 		alog("G2_HIDDENCOL-----------------end");
 	}
-//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
-}
 //그리드 조회(잠금)	
 function G3_SEARCH(tinput,token){
 	alog("G3_SEARCH()------------start");
@@ -907,6 +907,11 @@ function G3_SEARCH(tinput,token){
         alog("G3_SEARCH()------------end");
     }
 
+//새로고침	
+function G3_RELOAD(token){
+  alog("G3_RELOAD-----------------start");
+  G3_SEARCH(lastinputG3,token);
+}
 //엑셀 다운받기 - 렌더링 후값인 NM (잠금)
 function G3_EXCEL(tinput,token){
 	alog("G3_EXCEL()------------start");
@@ -941,11 +946,40 @@ function G3_HIDDENCOL(token){
 
 		alog("G3_HIDDENCOL-----------------end");
 	}
-//새로고침	
-function G3_RELOAD(token){
-  alog("G3_RELOAD-----------------start");
-  G3_SEARCH(lastinputG3,token);
-}
+//엑셀 다운받기 - 렌더링 후값인 NM (메뉴이력)
+function G4_EXCEL(tinput,token){
+	alog("G4_EXCEL()------------start");
+
+	webix.toExcel($$("wixdtG4"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"LAUTH_SEQ": {header: "SEQ"}
+,			"REQ_TOKEN": {header: "REQ"}
+,			"RES_TOKEN": {header: "RES"}
+,			"USR_SEQ": {header: "USR_SEQ"}
+,			"USR_ID": {header: "USR_ID"}
+,			"PGMID": {header: "프로그램ID"}
+,			"AUTH_ID": {header: "AUTH_ID"}
+,			"SUCCESS_YN": {header: "SUCCESS_YN"}
+,			"ADD_DT": {header: "ADD"}
+			}
+		}   
+	);
+
+
+	alog("G4_EXCEL()------------end");
+}//사용자정의함수 : 숨김필드보기
+function G4_HIDDENCOL(token){
+	alog("G4_HIDDENCOL-----------------start");
+
+	if(isToggleHiddenColG4){
+		isToggleHiddenColG4 = false;
+	}else{
+			isToggleHiddenColG4 = true;
+		}
+
+		alog("G4_HIDDENCOL-----------------end");
+	}
 //그리드 조회(메뉴이력)	
 function G4_SEARCH(tinput,token){
 	alog("G4_SEARCH()------------start");
@@ -1034,40 +1068,6 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
-//엑셀 다운받기 - 렌더링 후값인 NM (메뉴이력)
-function G4_EXCEL(tinput,token){
-	alog("G4_EXCEL()------------start");
-
-	webix.toExcel($$("wixdtG4"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"LAUTH_SEQ": {header: "SEQ"}
-,			"REQ_TOKEN": {header: "REQ"}
-,			"RES_TOKEN": {header: "RES"}
-,			"USR_SEQ": {header: "USR_SEQ"}
-,			"USR_ID": {header: "USR_ID"}
-,			"PGMID": {header: "프로그램ID"}
-,			"AUTH_ID": {header: "AUTH_ID"}
-,			"SUCCESS_YN": {header: "SUCCESS_YN"}
-,			"ADD_DT": {header: "ADD"}
-			}
-		}   
-	);
-
-
-	alog("G4_EXCEL()------------end");
-}//사용자정의함수 : 숨김필드보기
-function G4_HIDDENCOL(token){
-	alog("G4_HIDDENCOL-----------------start");
-
-	if(isToggleHiddenColG4){
-		isToggleHiddenColG4 = false;
-	}else{
-			isToggleHiddenColG4 = true;
-		}
-
-		alog("G4_HIDDENCOL-----------------end");
-	}
 //새로고침	
 function G4_RELOAD(token){
   alog("G4_RELOAD-----------------start");

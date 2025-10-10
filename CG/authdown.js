@@ -340,6 +340,29 @@ function G1_SEARCHALL(token){
 	G2_SEARCH(lastinputG2,token);
 	alog("G1_SEARCHALL--------------------------end");
 }
+//엑셀다운		
+function G2_EXCEL(){	
+	alog("G2_EXCEL-----------------start");
+	var myForm = document.excelDownForm;
+	var url = "/common/cg_phpexcel.php";
+	window.open("" ,"popForm",
+		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
+	myForm.action =url;
+	myForm.method="post";
+	myForm.target="popForm";
+
+	mygridG2.setSerializationLevel(true,false,false,false,false,true);
+	var myXmlString = mygridG2.serialize();        //컨디션 데이터 모두 말기
+	$("#DATA_HEADERS").val("FNCSEQ,PGMID,AUTH_ID,AUTH_NM,USE_YN,PGMID2");
+	$("#DATA_WIDTHS").val("60,100,120,120,60,120");
+	$("#DATA_ROWS").val(myXmlString);
+	myForm.submit();
+}
+//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
+}
 
 
 
@@ -415,24 +438,6 @@ function G2_SEARCH(tinput,token){
         alog("G2_SEARCH()------------end");
     }
 
-//엑셀다운		
-function G2_EXCEL(){	
-	alog("G2_EXCEL-----------------start");
-	var myForm = document.excelDownForm;
-	var url = "/common/cg_phpexcel.php";
-	window.open("" ,"popForm",
-		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
-	myForm.action =url;
-	myForm.method="post";
-	myForm.target="popForm";
-
-	mygridG2.setSerializationLevel(true,false,false,false,false,true);
-	var myXmlString = mygridG2.serialize();        //컨디션 데이터 모두 말기
-	$("#DATA_HEADERS").val("FNCSEQ,PGMID,AUTH_ID,AUTH_NM,USE_YN,PGMID2");
-	$("#DATA_WIDTHS").val("60,100,120,120,60,120");
-	$("#DATA_ROWS").val(myXmlString);
-	myForm.submit();
-}
     function G2_HIDDENCOL(){
 		alog("G2_HIDDENCOL()..................start");
         if(isToggleHiddenColG2){
@@ -441,8 +446,3 @@ function G2_EXCEL(){
         }
 		alog("G2_HIDDENCOL()..................end");
     }
-//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
-}

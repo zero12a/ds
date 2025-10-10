@@ -308,75 +308,6 @@ function G1_SEARCHALL(token){
 	G2_SEARCH(lastinputG2,token);
 	alog("G1_SEARCHALL--------------------------end");
 }
-//
-//행추가
-function G2_ROWADD(tinput,token){
-	alog("G2_ROWADD()------------start");
-
-	if( !(lastinputG2)	){
-		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
-		return;
-	}
-
-
-	var rowId =  webix.uid();
-
-	var rowData = {
-        id: rowId
-		,"IP_SEQ" : ""
-		,"PGMTYPE" : ""
-		,"ALLOW_IP" : ""
-		,"IP_DESC" : ""
-		,"ADD_DT" : ""
-		,"ADD_ID" : ""
-		,"MOD_DT" : ""
-		,"MOD_ID" : ""
-		, changeState: true
-		, changeCud: "inserted"
-	};
-
-
-	$$("wixdtG2").add(rowData,0);
-    $$("wixdtG2").addRowCss(rowId, "fontStateInsert");
-    alog("add row rowId : " + rowId);
-}
-//엑셀 다운받기 - 렌더링 후값인 NM (IP목록)
-function G2_EXCEL(tinput,token){
-	alog("G2_EXCEL()------------start");
-
-	webix.toExcel($$("wixdtG2"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"IP_SEQ": {header: "IP_SEQ"}
-,			"PGMTYPE": {header: "PGMTYPE"}
-,			"ALLOW_IP": {header: "IP"}
-,			"IP_DESC": {header: "DESC"}
-,			"ADD_DT": {header: "ADD"}
-,			"ADD_ID": {header: "ADD_ID"}
-,			"MOD_DT": {header: "MOD"}
-,			"MOD_ID": {header: "MOD_ID"}
-			}
-		}   
-	);
-
-
-	alog("G2_EXCEL()------------end");
-}//행삭제
-function G2_ROWDELETE(tinput,token){
-	alog("G2_ROWDELETE()------------start");
-
-    rowId = $$("wixdtG2").getSelectedId(false);
-    alog(rowId);
-    if(typeof rowId != "undefined"){
-        $$("wixdtG2").addRowCss(rowId, "fontStateDelete");
-
-        rowItem = $$("wixdtG2").getItem(rowId);
-        rowItem.changeState = true;
-        rowItem.changeCud = "deleted";
-    }else{
-        alert("삭제할 행을 선택하세요.");
-    }
-}
 //IP목록
 function G2_SAVE(token){
 	alog("G2_SAVE()------------start");
@@ -451,18 +382,11 @@ function G2_SAVE(token){
 	
 	alog("G2_SAVE()------------end");
 }
-//사용자정의함수 : 숨김필드보기
-function G2_HIDDENCOL(token){
-	alog("G2_HIDDENCOL-----------------start");
-
-	if(isToggleHiddenColG2){
-		isToggleHiddenColG2 = false;
-	}else{
-			isToggleHiddenColG2 = true;
-		}
-
-		alog("G2_HIDDENCOL-----------------end");
-	}
+//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
+}
 //그리드 조회(IP목록)	
 function G2_SEARCH(tinput,token){
 	alog("G2_SEARCH()------------start");
@@ -551,8 +475,85 @@ function G2_SEARCH(tinput,token){
         alog("G2_SEARCH()------------end");
     }
 
-//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
+//
+//행추가
+function G2_ROWADD(tinput,token){
+	alog("G2_ROWADD()------------start");
+
+	if( !(lastinputG2)	){
+		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
+		return;
+	}
+
+
+	var rowId =  webix.uid();
+
+	var rowData = {
+        id: rowId
+		,"IP_SEQ" : ""
+		,"PGMTYPE" : ""
+		,"ALLOW_IP" : ""
+		,"IP_DESC" : ""
+		,"ADD_DT" : ""
+		,"ADD_ID" : ""
+		,"MOD_DT" : ""
+		,"MOD_ID" : ""
+		, changeState: true
+		, changeCud: "inserted"
+	};
+
+
+	$$("wixdtG2").add(rowData,0);
+    $$("wixdtG2").addRowCss(rowId, "fontStateInsert");
+    alog("add row rowId : " + rowId);
+}
+//사용자정의함수 : 숨김필드보기
+function G2_HIDDENCOL(token){
+	alog("G2_HIDDENCOL-----------------start");
+
+	if(isToggleHiddenColG2){
+		isToggleHiddenColG2 = false;
+	}else{
+			isToggleHiddenColG2 = true;
+		}
+
+		alog("G2_HIDDENCOL-----------------end");
+	}
+//행삭제
+function G2_ROWDELETE(tinput,token){
+	alog("G2_ROWDELETE()------------start");
+
+    rowId = $$("wixdtG2").getSelectedId(false);
+    alog(rowId);
+    if(typeof rowId != "undefined"){
+        $$("wixdtG2").addRowCss(rowId, "fontStateDelete");
+
+        rowItem = $$("wixdtG2").getItem(rowId);
+        rowItem.changeState = true;
+        rowItem.changeCud = "deleted";
+    }else{
+        alert("삭제할 행을 선택하세요.");
+    }
+}
+//엑셀 다운받기 - 렌더링 후값인 NM (IP목록)
+function G2_EXCEL(tinput,token){
+	alog("G2_EXCEL()------------start");
+
+	webix.toExcel($$("wixdtG2"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"IP_SEQ": {header: "IP_SEQ"}
+,			"PGMTYPE": {header: "PGMTYPE"}
+,			"ALLOW_IP": {header: "IP"}
+,			"IP_DESC": {header: "DESC"}
+,			"ADD_DT": {header: "ADD"}
+,			"ADD_ID": {header: "ADD_ID"}
+,			"MOD_DT": {header: "MOD"}
+,			"MOD_ID": {header: "MOD_ID"}
+			}
+		}   
+	);
+
+
+	alog("G2_EXCEL()------------end");
 }

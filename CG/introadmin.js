@@ -1046,7 +1046,71 @@ function G1_SEARCHALL(token){
 	G9_SEARCH(lastinputG9,token);
 	alog("G1_SEARCHALL--------------------------end");
 }
-//G2_SAVE
+//	
+function G2_NEW(){
+	alog("[FromView] G2_NEW---------------start");
+	$("#G2-CTLCUD").val("C");
+	//PMGIO 로직
+	$("#G2-CFM_DESC").val("");//CFM_DESC 신규초기화	
+	alog("DETAILNew20---------------end");
+}
+//디테일 검색	
+function G2_SEARCH(tinput,token){
+       alog("(FORMVIEW) G2_SEARCH---------------start");
+
+	//post 만들기
+	sendFormData = new FormData($("#condition")[0]);
+	var conAllData = "";
+	if(typeof tinput != "undefined" && tinput != null){
+		var tKeys = tinput.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],tinput.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ tinput.get(tKeys[i])); 
+		}
+	}
+
+	$.ajax({
+        type : "POST",
+        url : url_G2_SEARCH+"&TOKEN=" + token + "&" + conAllData ,
+        data : sendFormData,
+		processData: false,
+		contentType: false,
+        dataType: "json",
+        success: function(data){
+            alog(data);
+
+			if(data && data.RTN_CD == "200"){
+				if(data.RTN_DATA){
+					msgNotice("정상적으로 조회되었습니다.",1);
+				}else{
+					msgNotice("정상적으로 조회되었으나 데이터가 없습니다.",2);
+					return;
+				}
+			}else{
+				msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
+				return;
+			}
+
+            //모드 변경하기
+            $("#G2-CTLCUD").val("R");
+			//SETVAL  가져와서 세팅
+	$("#G2-FROM_DT").val(data.RTN_DATA.FROM_DT);//FROM_DT 오브젝트 값 세팅
+	$("#G2-TO_DT").val(data.RTN_DATA.TO_DT);//~ 오브젝트 값 세팅
+			$("#G2-CFM_DESC").val(data.RTN_DATA.CFM_DESC);//CFM_DESC 변수세팅
+        },
+        error: function(error){
+            alog("Error:");
+            alog(error);
+        }
+    });
+    alog("(FORMVIEW) G2_SEARCH---------------end");
+
+}
+//새로고침	
+function G2_RELOAD(token){
+	alog("G2_RELOAD-----------------start");
+	G2_SEARCH(lastinputG2,token);
+}//G2_SAVE
 //IO_FILE_YN = V/, G/N	
 //IO_FILE_YN = N	
 function G2_SAVE(token){	
@@ -1109,74 +1173,28 @@ function G2_SAVE(token){
 		}
 	});
 }
-//디테일 검색	
-function G2_SEARCH(tinput,token){
-       alog("(FORMVIEW) G2_SEARCH---------------start");
-
-	//post 만들기
-	sendFormData = new FormData($("#condition")[0]);
-	var conAllData = "";
-	if(typeof tinput != "undefined" && tinput != null){
-		var tKeys = tinput.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],tinput.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ tinput.get(tKeys[i])); 
-		}
-	}
-
-	$.ajax({
-        type : "POST",
-        url : url_G2_SEARCH+"&TOKEN=" + token + "&" + conAllData ,
-        data : sendFormData,
-		processData: false,
-		contentType: false,
-        dataType: "json",
-        success: function(data){
-            alog(data);
-
-			if(data && data.RTN_CD == "200"){
-				if(data.RTN_DATA){
-					msgNotice("정상적으로 조회되었습니다.",1);
-				}else{
-					msgNotice("정상적으로 조회되었으나 데이터가 없습니다.",2);
-					return;
-				}
-			}else{
-				msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
-				return;
-			}
-
-            //모드 변경하기
-            $("#G2-CTLCUD").val("R");
-			//SETVAL  가져와서 세팅
-	$("#G2-FROM_DT").val(data.RTN_DATA.FROM_DT);//FROM_DT 오브젝트 값 세팅
-	$("#G2-TO_DT").val(data.RTN_DATA.TO_DT);//~ 오브젝트 값 세팅
-			$("#G2-CFM_DESC").val(data.RTN_DATA.CFM_DESC);//CFM_DESC 변수세팅
-        },
-        error: function(error){
-            alog("Error:");
-            alog(error);
-        }
-    });
-    alog("(FORMVIEW) G2_SEARCH---------------end");
-
-}
-//	
-function G2_NEW(){
-	alog("[FromView] G2_NEW---------------start");
-	$("#G2-CTLCUD").val("C");
-	//PMGIO 로직
-	$("#G2-CFM_DESC").val("");//CFM_DESC 신규초기화	
-	alog("DETAILNew20---------------end");
-}
 //새로고침	
-function G2_RELOAD(token){
-	alog("G2_RELOAD-----------------start");
-	G2_SEARCH(lastinputG2,token);
-}//새로고침	
 function G8_RELOAD(token){
   alog("G8_RELOAD-----------------start");
   G8_SEARCH(lastinputG8,token);
+}
+//엑셀다운		
+function G8_EXCEL(){	
+	alog("G8_EXCEL-----------------start");
+	var myForm = document.excelDownForm;
+	var url = "/common/cg_phpexcel.php";
+	window.open("" ,"popForm",
+		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
+	myForm.action =url;
+	myForm.method="post";
+	myForm.target="popForm";
+
+	mygridG8.setSerializationLevel(true,false,false,false,false,true);
+	var myXmlString = mygridG8.serialize();        //컨디션 데이터 모두 말기
+	$("#DATA_HEADERS").val("CFM_SEQ,FROM_DT,TO_DT,CFM_DESC,ADD_DT,ADD_ID");
+	$("#DATA_WIDTHS").val("60,100,100,100,60,60");
+	$("#DATA_ROWS").val(myXmlString);
+	myForm.submit();
 }
 
 
@@ -1254,24 +1272,6 @@ function G8_SEARCH(tinput,token){
     }
 
 //엑셀다운		
-function G8_EXCEL(){	
-	alog("G8_EXCEL-----------------start");
-	var myForm = document.excelDownForm;
-	var url = "/common/cg_phpexcel.php";
-	window.open("" ,"popForm",
-		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
-	myForm.action =url;
-	myForm.method="post";
-	myForm.target="popForm";
-
-	mygridG8.setSerializationLevel(true,false,false,false,false,true);
-	var myXmlString = mygridG8.serialize();        //컨디션 데이터 모두 말기
-	$("#DATA_HEADERS").val("CFM_SEQ,FROM_DT,TO_DT,CFM_DESC,ADD_DT,ADD_ID");
-	$("#DATA_WIDTHS").val("60,100,100,100,60,60");
-	$("#DATA_ROWS").val(myXmlString);
-	myForm.submit();
-}
-//엑셀다운		
 function G3_EXCEL(){	
 	alog("G3_EXCEL-----------------start");
 	var myForm = document.excelDownForm;
@@ -1288,11 +1288,6 @@ function G3_EXCEL(){
 	$("#DATA_WIDTHS").val("50,100");
 	$("#DATA_ROWS").val(myXmlString);
 	myForm.submit();
-}
-//새로고침	
-function G3_RELOAD(token){
-  alog("G3_RELOAD-----------------start");
-  G3_SEARCH(lastinputG3,token);
 }
 
 
@@ -1369,28 +1364,10 @@ function G3_SEARCH(tinput,token){
         alog("G3_SEARCH()------------end");
     }
 
-//엑셀다운		
-function G4_EXCEL(){	
-	alog("G4_EXCEL-----------------start");
-	var myForm = document.excelDownForm;
-	var url = "/common/cg_phpexcel.php";
-	window.open("" ,"popForm",
-		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
-	myForm.action =url;
-	myForm.method="post";
-	myForm.target="popForm";
-
-	mygridG4.setSerializationLevel(true,false,false,false,false,true);
-	var myXmlString = mygridG4.serialize();        //컨디션 데이터 모두 말기
-	$("#DATA_HEADERS").val("REMOTE_ADDR,LOGIN_CNT");
-	$("#DATA_WIDTHS").val("60,100");
-	$("#DATA_ROWS").val(myXmlString);
-	myForm.submit();
-}
 //새로고침	
-function G4_RELOAD(token){
-  alog("G4_RELOAD-----------------start");
-  G4_SEARCH(lastinputG4,token);
+function G3_RELOAD(token){
+  alog("G3_RELOAD-----------------start");
+  G3_SEARCH(lastinputG3,token);
 }
 
 
@@ -1467,6 +1444,52 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
+//새로고침	
+function G4_RELOAD(token){
+  alog("G4_RELOAD-----------------start");
+  G4_SEARCH(lastinputG4,token);
+}
+//엑셀다운		
+function G4_EXCEL(){	
+	alog("G4_EXCEL-----------------start");
+	var myForm = document.excelDownForm;
+	var url = "/common/cg_phpexcel.php";
+	window.open("" ,"popForm",
+		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
+	myForm.action =url;
+	myForm.method="post";
+	myForm.target="popForm";
+
+	mygridG4.setSerializationLevel(true,false,false,false,false,true);
+	var myXmlString = mygridG4.serialize();        //컨디션 데이터 모두 말기
+	$("#DATA_HEADERS").val("REMOTE_ADDR,LOGIN_CNT");
+	$("#DATA_WIDTHS").val("60,100");
+	$("#DATA_ROWS").val(myXmlString);
+	myForm.submit();
+}
+//새로고침	
+function G6_RELOAD(token){
+  alog("G6_RELOAD-----------------start");
+  G6_SEARCH(lastinputG6,token);
+}
+//엑셀다운		
+function G6_EXCEL(){	
+	alog("G6_EXCEL-----------------start");
+	var myForm = document.excelDownForm;
+	var url = "/common/cg_phpexcel.php";
+	window.open("" ,"popForm",
+		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
+	myForm.action =url;
+	myForm.method="post";
+	myForm.target="popForm";
+
+	mygridG6.setSerializationLevel(true,false,false,false,false,true);
+	var myXmlString = mygridG6.serialize();        //컨디션 데이터 모두 말기
+	$("#DATA_HEADERS").val("USR_ID,AUTH_CNT");
+	$("#DATA_WIDTHS").val("50,50");
+	$("#DATA_ROWS").val(myXmlString);
+	myForm.submit();
+}
 
 
 
@@ -1542,9 +1565,14 @@ function G6_SEARCH(tinput,token){
         alog("G6_SEARCH()------------end");
     }
 
+//새로고침	
+function G7_RELOAD(token){
+  alog("G7_RELOAD-----------------start");
+  G7_SEARCH(lastinputG7,token);
+}
 //엑셀다운		
-function G6_EXCEL(){	
-	alog("G6_EXCEL-----------------start");
+function G7_EXCEL(){	
+	alog("G7_EXCEL-----------------start");
 	var myForm = document.excelDownForm;
 	var url = "/common/cg_phpexcel.php";
 	window.open("" ,"popForm",
@@ -1553,22 +1581,12 @@ function G6_EXCEL(){
 	myForm.method="post";
 	myForm.target="popForm";
 
-	mygridG6.setSerializationLevel(true,false,false,false,false,true);
-	var myXmlString = mygridG6.serialize();        //컨디션 데이터 모두 말기
-	$("#DATA_HEADERS").val("USR_ID,AUTH_CNT");
-	$("#DATA_WIDTHS").val("50,50");
+	mygridG7.setSerializationLevel(true,false,false,false,false,true);
+	var myXmlString = mygridG7.serialize();        //컨디션 데이터 모두 말기
+	$("#DATA_HEADERS").val("USR_ID,LOGIN_CNT");
+	$("#DATA_WIDTHS").val("50,100");
 	$("#DATA_ROWS").val(myXmlString);
 	myForm.submit();
-}
-//새로고침	
-function G6_RELOAD(token){
-  alog("G6_RELOAD-----------------start");
-  G6_SEARCH(lastinputG6,token);
-}
-//새로고침	
-function G7_RELOAD(token){
-  alog("G7_RELOAD-----------------start");
-  G7_SEARCH(lastinputG7,token);
 }
 
 
@@ -1646,24 +1664,6 @@ function G7_SEARCH(tinput,token){
     }
 
 //엑셀다운		
-function G7_EXCEL(){	
-	alog("G7_EXCEL-----------------start");
-	var myForm = document.excelDownForm;
-	var url = "/common/cg_phpexcel.php";
-	window.open("" ,"popForm",
-		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
-	myForm.action =url;
-	myForm.method="post";
-	myForm.target="popForm";
-
-	mygridG7.setSerializationLevel(true,false,false,false,false,true);
-	var myXmlString = mygridG7.serialize();        //컨디션 데이터 모두 말기
-	$("#DATA_HEADERS").val("USR_ID,LOGIN_CNT");
-	$("#DATA_WIDTHS").val("50,100");
-	$("#DATA_ROWS").val(myXmlString);
-	myForm.submit();
-}
-//엑셀다운		
 function G9_EXCEL(){	
 	alog("G9_EXCEL-----------------start");
 	var myForm = document.excelDownForm;
@@ -1680,11 +1680,6 @@ function G9_EXCEL(){
 	$("#DATA_WIDTHS").val("50,60,60");
 	$("#DATA_ROWS").val(myXmlString);
 	myForm.submit();
-}
-//새로고침	
-function G9_RELOAD(token){
-  alog("G9_RELOAD-----------------start");
-  G9_SEARCH(lastinputG9,token);
 }
 
 
@@ -1761,3 +1756,8 @@ function G9_SEARCH(tinput,token){
         alog("G9_SEARCH()------------end");
     }
 
+//새로고침	
+function G9_RELOAD(token){
+  alog("G9_RELOAD-----------------start");
+  G9_SEARCH(lastinputG9,token);
+}

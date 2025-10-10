@@ -607,12 +607,6 @@ function G5_INIT(){
 	alog("G5_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
-//사용자정의함수 : 사용자정의
-function G2_USERDEF(token){
-	alog("G2_USERDEF-----------------start");
-
-	alog("G2_USERDEF-----------------end");
-}
 //검색조건 초기화
 function G2_RESET(){
 	alog("G2_RESET--------------------------start");
@@ -663,10 +657,15 @@ function G2_SEARCHALL(token){
 	alog("G2_SEARCHALL--------------------------end");
 }
 //사용자정의함수 : 사용자정의
-function G3_USERDEF(token){
-	alog("G3_USERDEF-----------------start");
+function G2_USERDEF(token){
+	alog("G2_USERDEF-----------------start");
 
-	alog("G3_USERDEF-----------------end");
+	alog("G2_USERDEF-----------------end");
+}
+//새로고침	
+function G3_RELOAD(token){
+  alog("G3_RELOAD-----------------start");
+  G3_SEARCH(lastinputG3,token);
 }
 //그리드 행추가 : M
 	function G3_ROWBULKADD(){
@@ -714,68 +713,7 @@ function G3_EXCEL(){
         }
 		alog("G3_HIDDENCOL()..................end");
     }
-	//M
-function G3_SAVE(token){
-	alog("G3_SAVE()------------start");
-	tgrid = mygridG3;
-
-	//tgrid.setSerializationLevel(true,false,false,false,true,true);
-	//var myXmlString = tgrid.serialize();
-        //post 만들기
-		sendFormData = new FormData($("#condition")[0]);
-		var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG3 != "undefined" && lastinputG3 != null){
-		var tKeys = lastinputG3.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG3.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG3.get(tKeys[i])); 
-		}
-	}
-	//sendFormData.append("G3-XML" , myXmlString);
-
-	$.ajax({
-		type : "POST",
-		url : url_G3_SAVE+"&TOKEN=" + token + "&" + conAllData ,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: false,
-		success: function(data){
-			alog("   json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-
-			//그리드에 데이터 반영
-			saveToGroup(data);
-
-		},
-		error: function(error){
-			msgError("Ajax http 500 error ( " + error + " )");
-			alog("Ajax http 500 error ( " + error + " )");
-		}
-	});
-	
-	alog("G3_SAVE()------------end");
-}
-//새로고침	
-function G3_RELOAD(token){
-  alog("G3_RELOAD-----------------start");
-  G3_SEARCH(lastinputG3,token);
-}
-//행추가3 (M)	
-//그리드 행추가 : M
-	function G3_ROWADD(){
-		if( !(lastinputG3)){
-			msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
-		}else{
-			var tCols = ["",""];//초기값
-			addRow(mygridG3,tCols);
-		}
-	}//M
+//M
 function G3_CHKSAVE(token){
 	alog("G3_CHKSAVE()------------start");
 	tgrid = mygridG3;
@@ -823,6 +761,12 @@ function G3_CHKSAVE(token){
 	});
 	
 	alog("G3_CHKSAVE()------------end");
+}
+//사용자정의함수 : 사용자정의
+function G3_USERDEF(token){
+	alog("G3_USERDEF-----------------start");
+
+	alog("G3_USERDEF-----------------end");
 }
 
 
@@ -899,10 +843,10 @@ function G3_SEARCH(tinput,token){
         alog("G3_SEARCH()------------end");
     }
 
-	//D
-function G4_SAVE(token){
-	alog("G4_SAVE()------------start");
-	tgrid = mygridG4;
+	//M
+function G3_SAVE(token){
+	alog("G3_SAVE()------------start");
+	tgrid = mygridG3;
 
 	//tgrid.setSerializationLevel(true,false,false,false,true,true);
 	//var myXmlString = tgrid.serialize();
@@ -910,18 +854,18 @@ function G4_SAVE(token){
 		sendFormData = new FormData($("#condition")[0]);
 		var conAllData = "";
 	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG4 != "undefined" && lastinputG4 != null){
-		var tKeys = lastinputG4.keys();
+	if(typeof lastinputG3 != "undefined" && lastinputG3 != null){
+		var tKeys = lastinputG3.keys();
 		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG4.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG4.get(tKeys[i])); 
+			sendFormData.append(tKeys[i],lastinputG3.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG3.get(tKeys[i])); 
 		}
 	}
-	//sendFormData.append("G4-XML" , myXmlString);
+	//sendFormData.append("G3-XML" , myXmlString);
 
 	$.ajax({
 		type : "POST",
-		url : url_G4_SAVE+"&TOKEN=" + token + "&" + conAllData ,
+		url : url_G3_SAVE+"&TOKEN=" + token + "&" + conAllData ,
 		data : sendFormData,
 		processData: false,
 		contentType: false,
@@ -944,23 +888,31 @@ function G4_SAVE(token){
 		}
 	});
 	
-	alog("G4_SAVE()------------end");
+	alog("G3_SAVE()------------end");
 }
-//새로고침	
-function G4_RELOAD(token){
-  alog("G4_RELOAD-----------------start");
-  G4_SEARCH(lastinputG4,token);
-}
-//행추가3 (D)	
-//그리드 행추가 : D
-	function G4_ROWADD(){
-		if( !(lastinputG4)|| lastinputG4.get("G4-LAYOUTID") == ""){
+//행추가3 (M)	
+//그리드 행추가 : M
+	function G3_ROWADD(){
+		if( !(lastinputG3)){
 			msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
 		}else{
 			var tCols = ["",""];//초기값
-			addRow(mygridG4,tCols);
+			addRow(mygridG3,tCols);
 		}
-	}//D
+	}    function G4_ROWDELETE(){	
+        alog("G4_ROWDELETE()------------start");
+        delRow(mygridG4);
+        alog("G4_ROWDELETE()------------start");
+    }
+    function G4_HIDDENCOL(){
+		alog("G4_HIDDENCOL()..................start");
+        if(isToggleHiddenColG4){
+            isToggleHiddenColG4 = false;     }else{
+            isToggleHiddenColG4 = true;
+        }
+		alog("G4_HIDDENCOL()..................end");
+    }
+//D
 function G4_CHKSAVE(token){
 	alog("G4_CHKSAVE()------------start");
 	tgrid = mygridG4;
@@ -1008,6 +960,12 @@ function G4_CHKSAVE(token){
 	});
 	
 	alog("G4_CHKSAVE()------------end");
+}
+//사용자정의함수 : 사용자정의
+function G4_USERDEF(token){
+	alog("G4_USERDEF-----------------start");
+
+	alog("G4_USERDEF-----------------end");
 }
 
 
@@ -1084,11 +1042,66 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
-//사용자정의함수 : 사용자정의
-function G4_USERDEF(token){
-	alog("G4_USERDEF-----------------start");
+	//D
+function G4_SAVE(token){
+	alog("G4_SAVE()------------start");
+	tgrid = mygridG4;
 
-	alog("G4_USERDEF-----------------end");
+	//tgrid.setSerializationLevel(true,false,false,false,true,true);
+	//var myXmlString = tgrid.serialize();
+        //post 만들기
+		sendFormData = new FormData($("#condition")[0]);
+		var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG4 != "undefined" && lastinputG4 != null){
+		var tKeys = lastinputG4.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG4.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG4.get(tKeys[i])); 
+		}
+	}
+	//sendFormData.append("G4-XML" , myXmlString);
+
+	$.ajax({
+		type : "POST",
+		url : url_G4_SAVE+"&TOKEN=" + token + "&" + conAllData ,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: false,
+		success: function(data){
+			alog("   json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+
+			//그리드에 데이터 반영
+			saveToGroup(data);
+
+		},
+		error: function(error){
+			msgError("Ajax http 500 error ( " + error + " )");
+			alog("Ajax http 500 error ( " + error + " )");
+		}
+	});
+	
+	alog("G4_SAVE()------------end");
+}
+//행추가3 (D)	
+//그리드 행추가 : D
+	function G4_ROWADD(){
+		if( !(lastinputG4)|| lastinputG4.get("G4-LAYOUTID") == ""){
+			msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
+		}else{
+			var tCols = ["",""];//초기값
+			addRow(mygridG4,tCols);
+		}
+	}//새로고침	
+function G4_RELOAD(token){
+  alog("G4_RELOAD-----------------start");
+  G4_SEARCH(lastinputG4,token);
 }
 //그리드 행추가 : D
 	function G4_ROWBULKADD(){
@@ -1122,181 +1135,6 @@ function G4_EXCEL(){
 	$("#DATA_WIDTHS").val("60px,70px");
 	$("#DATA_ROWS").val(myXmlString);
 	myForm.submit();
-}
-    function G4_ROWDELETE(){	
-        alog("G4_ROWDELETE()------------start");
-        delRow(mygridG4);
-        alog("G4_ROWDELETE()------------start");
-    }
-    function G4_HIDDENCOL(){
-		alog("G4_HIDDENCOL()..................start");
-        if(isToggleHiddenColG4){
-            isToggleHiddenColG4 = false;     }else{
-            isToggleHiddenColG4 = true;
-        }
-		alog("G4_HIDDENCOL()..................end");
-    }
-//사용자정의함수 : 사용자정의
-function G5_USERDEF(token){
-	alog("G5_USERDEF-----------------start");
-
-	alog("G5_USERDEF-----------------end");
-}
-//그리드 행추가 : S
-	function G5_ROWBULKADD(){
-		if( !(lastinputG5json)|| !(lastinputG5json.LAYOUTID) ){
-			msgError("조회 후에 행추가 가능합니다",3);
-		}else{
-			var tCols = ["",""];//초기값
-
-	var rowcnt = prompt("Please enter row's count", "input number");
-	if($.isNumeric(rowcnt)){
-		for(k=0;k<rowcnt;k++){
-			addRow(mygridG5,tCols);  
-		}
-	}
-			}
-	}
-//엑셀다운		
-function G5_EXCEL(){	
-	alog("G5_EXCEL-----------------start");
-	var myForm = document.excelDownForm;
-	var url = "/common/cg_phpexcel.php";
-	window.open("" ,"popForm",
-		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
-	myForm.action =url;
-	myForm.method="post";
-	myForm.target="popForm";
-
-	mygridG5.setSerializationLevel(true,false,false,false,false,true);
-	var myXmlString = mygridG5.serialize();        //컨디션 데이터 모두 말기
-	$("#DATA_HEADERS").val("LAYOUTSSEQ,ADDDT");
-	$("#DATA_WIDTHS").val("60px,70px");
-	$("#DATA_ROWS").val(myXmlString);
-	myForm.submit();
-}
-    function G5_ROWDELETE(){	
-        alog("G5_ROWDELETE()------------start");
-        delRow(mygridG5);
-        alog("G5_ROWDELETE()------------start");
-    }
-    function G5_HIDDENCOL(){
-		alog("G5_HIDDENCOL()..................start");
-        if(isToggleHiddenColG5){
-            isToggleHiddenColG5 = false;     }else{
-            isToggleHiddenColG5 = true;
-        }
-		alog("G5_HIDDENCOL()..................end");
-    }
-	//S
-function G5_SAVE(token){
-	alog("G5_SAVE()------------start");
-	tgrid = mygridG5;
-
-	//tgrid.setSerializationLevel(true,false,false,false,true,true);
-	//var myXmlString = tgrid.serialize();
-        //post 만들기
-		sendFormData = new FormData($("#condition")[0]);
-		var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG5 != "undefined" && lastinputG5 != null){
-		var tKeys = lastinputG5.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG5.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG5.get(tKeys[i])); 
-		}
-	}
-	//sendFormData.append("G5-XML" , myXmlString);
-
-	$.ajax({
-		type : "POST",
-		url : url_G5_SAVE+"&TOKEN=" + token + "&" + conAllData ,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: false,
-		success: function(data){
-			alog("   json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-
-			//그리드에 데이터 반영
-			saveToGroup(data);
-
-		},
-		error: function(error){
-			msgError("Ajax http 500 error ( " + error + " )");
-			alog("Ajax http 500 error ( " + error + " )");
-		}
-	});
-	
-	alog("G5_SAVE()------------end");
-}
-//새로고침	
-function G5_RELOAD(token){
-  alog("G5_RELOAD-----------------start");
-  G5_SEARCH(lastinputG5,token);
-}
-//행추가3 (S)	
-//그리드 행추가 : S
-	function G5_ROWADD(){
-		if( !(lastinputG5)|| lastinputG5.get("G5-LAYOUTID") == ""){
-			msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
-		}else{
-			var tCols = ["",""];//초기값
-			addRow(mygridG5,tCols);
-		}
-	}//S
-function G5_CHKSAVE(token){
-	alog("G5_CHKSAVE()------------start");
-	tgrid = mygridG5;
-
-	//체크된 ROW의 ID 배열로 불러오기
-	var arrRows =  tgrid.getCheckedRows(0); //0번째 CHK 컬럼
-	//alert(arrRows.length);
-
-	//post 만들기
-	sendFormData = new FormData($("#condition")[0]);
-	var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG5 != "undefined" && lastinputG5 != null){
-		var tKeys = lastinputG5.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG5.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG5.get(tKeys[i])); 
-		}
-	}
-	//CHK 배열 합치기
-	sendFormData.append("G5-CHK",arrRows);
-	$.ajax({
-		type : "POST",
-		url : url_G5_CHKSAVE + "&TOKEN=" + token + "&" + conAllData,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: false,
-		success: function(data){
-			alog("   json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-
-			//그리드에 데이터 반영
-			saveToGroup(data);
-
-		},
-		error: function(error){
-			msgError("Ajax http 500 error ( " + error + " )");
-			alog("Ajax http 500 error ( " + error + " )");
-		}
-	});
-	
-	alog("G5_CHKSAVE()------------end");
 }
 
 
@@ -1373,3 +1211,165 @@ function G5_SEARCH(tinput,token){
         alog("G5_SEARCH()------------end");
     }
 
+	//S
+function G5_SAVE(token){
+	alog("G5_SAVE()------------start");
+	tgrid = mygridG5;
+
+	//tgrid.setSerializationLevel(true,false,false,false,true,true);
+	//var myXmlString = tgrid.serialize();
+        //post 만들기
+		sendFormData = new FormData($("#condition")[0]);
+		var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG5 != "undefined" && lastinputG5 != null){
+		var tKeys = lastinputG5.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG5.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG5.get(tKeys[i])); 
+		}
+	}
+	//sendFormData.append("G5-XML" , myXmlString);
+
+	$.ajax({
+		type : "POST",
+		url : url_G5_SAVE+"&TOKEN=" + token + "&" + conAllData ,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: false,
+		success: function(data){
+			alog("   json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+
+			//그리드에 데이터 반영
+			saveToGroup(data);
+
+		},
+		error: function(error){
+			msgError("Ajax http 500 error ( " + error + " )");
+			alog("Ajax http 500 error ( " + error + " )");
+		}
+	});
+	
+	alog("G5_SAVE()------------end");
+}
+//행추가3 (S)	
+//그리드 행추가 : S
+	function G5_ROWADD(){
+		if( !(lastinputG5)|| lastinputG5.get("G5-LAYOUTID") == ""){
+			msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
+		}else{
+			var tCols = ["",""];//초기값
+			addRow(mygridG5,tCols);
+		}
+	}//새로고침	
+function G5_RELOAD(token){
+  alog("G5_RELOAD-----------------start");
+  G5_SEARCH(lastinputG5,token);
+}
+//그리드 행추가 : S
+	function G5_ROWBULKADD(){
+		if( !(lastinputG5json)|| !(lastinputG5json.LAYOUTID) ){
+			msgError("조회 후에 행추가 가능합니다",3);
+		}else{
+			var tCols = ["",""];//초기값
+
+	var rowcnt = prompt("Please enter row's count", "input number");
+	if($.isNumeric(rowcnt)){
+		for(k=0;k<rowcnt;k++){
+			addRow(mygridG5,tCols);  
+		}
+	}
+			}
+	}
+//엑셀다운		
+function G5_EXCEL(){	
+	alog("G5_EXCEL-----------------start");
+	var myForm = document.excelDownForm;
+	var url = "/common/cg_phpexcel.php";
+	window.open("" ,"popForm",
+		  "toolbar=no, width=540, height=467, directories=no, status=no,    scrollorbars=no, resizable=no");
+	myForm.action =url;
+	myForm.method="post";
+	myForm.target="popForm";
+
+	mygridG5.setSerializationLevel(true,false,false,false,false,true);
+	var myXmlString = mygridG5.serialize();        //컨디션 데이터 모두 말기
+	$("#DATA_HEADERS").val("LAYOUTSSEQ,ADDDT");
+	$("#DATA_WIDTHS").val("60px,70px");
+	$("#DATA_ROWS").val(myXmlString);
+	myForm.submit();
+}
+    function G5_ROWDELETE(){	
+        alog("G5_ROWDELETE()------------start");
+        delRow(mygridG5);
+        alog("G5_ROWDELETE()------------start");
+    }
+    function G5_HIDDENCOL(){
+		alog("G5_HIDDENCOL()..................start");
+        if(isToggleHiddenColG5){
+            isToggleHiddenColG5 = false;     }else{
+            isToggleHiddenColG5 = true;
+        }
+		alog("G5_HIDDENCOL()..................end");
+    }
+//S
+function G5_CHKSAVE(token){
+	alog("G5_CHKSAVE()------------start");
+	tgrid = mygridG5;
+
+	//체크된 ROW의 ID 배열로 불러오기
+	var arrRows =  tgrid.getCheckedRows(0); //0번째 CHK 컬럼
+	//alert(arrRows.length);
+
+	//post 만들기
+	sendFormData = new FormData($("#condition")[0]);
+	var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG5 != "undefined" && lastinputG5 != null){
+		var tKeys = lastinputG5.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG5.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG5.get(tKeys[i])); 
+		}
+	}
+	//CHK 배열 합치기
+	sendFormData.append("G5-CHK",arrRows);
+	$.ajax({
+		type : "POST",
+		url : url_G5_CHKSAVE + "&TOKEN=" + token + "&" + conAllData,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: false,
+		success: function(data){
+			alog("   json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+
+			//그리드에 데이터 반영
+			saveToGroup(data);
+
+		},
+		error: function(error){
+			msgError("Ajax http 500 error ( " + error + " )");
+			alog("Ajax http 500 error ( " + error + " )");
+		}
+	});
+	
+	alog("G5_CHKSAVE()------------end");
+}
+//사용자정의함수 : 사용자정의
+function G5_USERDEF(token){
+	alog("G5_USERDEF-----------------start");
+
+	alog("G5_USERDEF-----------------end");
+}
