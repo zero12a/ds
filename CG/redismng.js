@@ -336,6 +336,34 @@ function G4_INIT(){
   alog("G4_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+//사용자정의함수 : 키목록 조회
+function G1_SearchMaps(token){
+	alog("G1_SearchMaps-----------------start");
+	//post 만들기
+	sendFormData = new FormData();
+
+	$$('wixdtG2').clearAll();
+
+	$.ajax({
+		type : "POST",
+		url : "../cg_configmng_api.php?CTL=getMapList&TOKEN=" + token,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		success: function(tdata){
+			alog(tdata);
+			$("#G4-LOG").val(tdata.RTN_MSG + "\n" + $("#G4-LOG").val());
+			$$("wixdtG2").parse(tdata.RTN_DATA,"json");
+			$("#spanG2Cnt").text(tdata.RTN_DATA.length);
+		},
+		error: function(error){
+			alog("Error:");
+			alog(error);
+		}
+	});
+	alog("G1_SearchMaps-----------------end");
+}
 //사용자정의함수 : 로그인
 function G1_Login(token){
 	alog("G1_Login-----------------start");
@@ -366,34 +394,6 @@ function G1_Login(token){
 		}
 	});
 	alog("G1_Login-----------------end");
-}
-//사용자정의함수 : 키목록 조회
-function G1_SearchMaps(token){
-	alog("G1_SearchMaps-----------------start");
-	//post 만들기
-	sendFormData = new FormData();
-
-	$$('wixdtG2').clearAll();
-
-	$.ajax({
-		type : "POST",
-		url : "../cg_configmng_api.php?CTL=getMapList&TOKEN=" + token,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		success: function(tdata){
-			alog(tdata);
-			$("#G4-LOG").val(tdata.RTN_MSG + "\n" + $("#G4-LOG").val());
-			$$("wixdtG2").parse(tdata.RTN_DATA,"json");
-			$("#spanG2Cnt").text(tdata.RTN_DATA.length);
-		},
-		error: function(error){
-			alog("Error:");
-			alog(error);
-		}
-	});
-	alog("G1_SearchMaps-----------------end");
 }
 //사용자정의함수 : 선택저장
 function G2_CHKSAVE(token){
@@ -452,32 +452,14 @@ function G3_SEARCH(tinput,token){
     alog("(FORMVIEW) G3_SEARCH---------------end");
 
 }
-//사용자정의함수 : 삭제
-function G3_DELETE(token){
-	alog("G3_DELETE-----------------start");
-	if(!confirm("정말로 삭제하시겠습니까?"))return;
-
-	sendFormData = new FormData();
-	sendFormData.append("KEY", $("#G3-KEY").val() );
-
-	$.ajax({
-		type : "POST",
-		url : "../cg_configmng_api.php?CTL=delMapOne&TOKEN=" + token,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		success: function(tdata){
-			alog(tdata);
-			$("#G4-LOG").val( tdata.RTN_MSG + "\n" + $("#G4-LOG").val() );
-		},
-		error: function(error){
-			alog("Error:");
-			alog(error);
-		}
-	});
-
-	alog("G3_DELETE-----------------end");
+//	
+function G3_NEW(){
+	alog("[FromView] G3_NEW---------------start");
+	$("#G3-CTLCUD").val("C");
+	//PMGIO 로직
+	$("#G3-KEY").val("");//KEY 신규초기화	
+	$("#G3-VALUE").val("");//VALUE 신규초기화
+	alog("DETAILNew30---------------end");
 }
 //새로고침	
 function G3_RELOAD(token){
@@ -511,12 +493,30 @@ function G3_SAVE(token){
 
 	alog("G3_SAVE-----------------end");
 }
-//	
-function G3_NEW(){
-	alog("[FromView] G3_NEW---------------start");
-	$("#G3-CTLCUD").val("C");
-	//PMGIO 로직
-	$("#G3-KEY").val("");//KEY 신규초기화	
-	$("#G3-VALUE").val("");//VALUE 신규초기화
-	alog("DETAILNew30---------------end");
+//사용자정의함수 : 삭제
+function G3_DELETE(token){
+	alog("G3_DELETE-----------------start");
+	if(!confirm("정말로 삭제하시겠습니까?"))return;
+
+	sendFormData = new FormData();
+	sendFormData.append("KEY", $("#G3-KEY").val() );
+
+	$.ajax({
+		type : "POST",
+		url : "../cg_configmng_api.php?CTL=delMapOne&TOKEN=" + token,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		success: function(tdata){
+			alog(tdata);
+			$("#G4-LOG").val( tdata.RTN_MSG + "\n" + $("#G4-LOG").val() );
+		},
+		error: function(error){
+			alog("Error:");
+			alog(error);
+		}
+	});
+
+	alog("G3_DELETE-----------------end");
 }

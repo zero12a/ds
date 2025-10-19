@@ -29,6 +29,7 @@ $log = getLoggerStdout(
 	, "REQTOKEN" => $reqToken
 	, "RESTOKEN" => $resToken
 	, "LOG_LEVEL" => Monolog\Logger::ERROR
+	, "FORMAT" => "LINE" //JSON, LINE
 	)
 );
 $log->info("PgmmngControl___________________________start");
@@ -385,7 +386,7 @@ switch ($ctl){
 		echo $objService->goG3Save(); //PJT, 저장
 		break;
 	case "G4_SEARCH" :
-		echo $objService->goG4Search(); //PGM, 조회
+		echo $objService->goG4Search(); //PGM, 조회1
 		break;
 	case "G4_SAVE" :
 		echo $objService->goG4Save(); //PGM, 저장

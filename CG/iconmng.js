@@ -481,6 +481,12 @@ apiCodeDropDown("G3","IMGTYPE4",{"CTLGRP":"G2", "CTLFNC":"SEARCH", "G1-PCD":"CTG
   alog("G3_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+//사용자정의함수 : 사용자정의
+function G1_USERDEF(token){
+	alog("G1_USERDEF-----------------start");
+
+	alog("G1_USERDEF-----------------end");
+}
 //검색조건 초기화
 function G1_RESET(){
 	alog("G1_RESET--------------------------start");
@@ -529,18 +535,6 @@ function G1_SEARCHALL(token){
 		//  호출
 	G2_SEARCH(lastinputG2,token);
 	alog("G1_SEARCHALL--------------------------end");
-}
-//사용자정의함수 : 사용자정의
-function G1_USERDEF(token){
-	alog("G1_USERDEF-----------------start");
-
-	alog("G1_USERDEF-----------------end");
-}
-//사용자정의함수 : 사용자정의
-function G2_USERDEF(token){
-	alog("G2_USERDEF-----------------start");
-
-	alog("G2_USERDEF-----------------end");
 }
 //새로고침	
 function G2_RELOAD(token){
@@ -711,10 +705,69 @@ function G2_SEARCH(tinput,token){
     }
 
 //사용자정의함수 : 사용자정의
-function G3_USERDEF(token){
-	alog("G3_USERDEF-----------------start");
+function G2_USERDEF(token){
+	alog("G2_USERDEF-----------------start");
 
-	alog("G3_USERDEF-----------------end");
+	alog("G2_USERDEF-----------------end");
+}
+//새로고침	
+function G3_RELOAD(token){
+	alog("G3_RELOAD-----------------start");
+	G3_SEARCH(lastinputG3,token);
+}//FORMVIEW DELETE
+function G3_DELETE(token){
+	alog("G3_DELETE---------------start");
+
+	//조회했는지 확인하기
+	if( $("#G3-CTLCUD").val() != "R" ){
+		alert("조회된 것만 삭제 가능합니다.");
+		return;
+	}
+	//확인
+	if(!confirm("정말로 삭제하시겠습니까?")){
+		return;
+	}
+	
+	//삭제처리 명령어
+	$("#G3-CTLCUD").val("D");
+	//post 만들기
+	sendFormData = new FormData($("#condition")[0]);
+	var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG3 != "undefined" && lastinputG3 != null ){
+		var tKeys = lastinputG3.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG3.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG3.get(tKeys[i])); 
+		}
+	}
+
+	$.ajax({
+		type : "POST",
+		url : url_G3_DELETE + "&TOKEN=" + token + "&" + conAllData,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		success: function(tdata){
+			alog(tdata);
+			data = jQuery.parseJSON(tdata);
+			//alert(data);
+			if(data && data.RTN_CD == "200"){
+				if(typeof(data.GRP_DATA) == "undefined" || data.GRP_DATA[0] == null || typeof(data.GRP_DATA[0].RTN_DATA) == "undefined"){
+					msgNotice("오류를 발생하지 않았으나, 처리 내역이 없습니다.(GRP_DATA is null, SQL미등록)",1);
+				}else{
+					affectedRows = data.GRP_DATA[0].RTN_DATA;
+					msgNotice("정상적으로 삭제되었습니다. [영향받은건수:" + affectedRows + "]",1);
+				}
+			}else{
+				msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
+			}
+		},
+		error: function(error){
+			alog("Error:");
+			alog(error);
+		}
+	});
 }
 //G3_SAVE
 //IO_FILE_YN = V/, G/Y	
@@ -815,6 +868,52 @@ function G3_SAVE(token){
 			alog(error);
 		}
 	});
+}
+function G3_MODIFY(){
+       alog("[FromView] G3_MODIFY---------------start");
+	if( $("#G3-CTLCUD").val() == "C" ){
+		alert("조회 후 수정 가능합니다. 신규 모드에서는 수정할 수 없습니다.")
+		return;
+	}
+	if( $("#G3-CTLCUD").val() == "D" ){
+		alert("조회 후 수정 가능합니다. 삭제 모드에서는 수정할 수 없습니다.")
+		return;
+	}
+
+	$("#G3-CTLCUD").val("U");
+       alog("[FromView] G3_MODIFY---------------end");
+}
+//사용자정의함수 : 사용자정의
+function G3_USERDEF(token){
+	alog("G3_USERDEF-----------------start");
+
+	alog("G3_USERDEF-----------------end");
+}
+//	
+function G3_NEW(){
+	alog("[FromView] G3_NEW---------------start");
+	$("#G3-CTLCUD").val("C");
+	//PMGIO 로직
+	$("#G3-ICONSEQ").val("");//seq 신규초기화	
+	$("#G3-IMGNM").val("");//IMGNM 신규초기화	
+	$("#G3-IMGSIZE").val("");//IMGSIZE 신규초기화	
+	$("#G3-IMGSVRNM").val("");//IMGSVRNM 신규초기화	
+	$("#G3-IMGHASH").val("");//IMGHASH 신규초기화	
+	$("#G3-IMGTYPE2").val("");//IMGTYPE2 신규초기화	
+	//G3-IMGTYPE3  NEW 신규일때 할게 있나?
+	obj_G3_CODEMIRROR.setValue(""); // CODEMIRROR값 비우기
+	$("#G3-TXTAREA").val("");//TXTAREA 신규초기화
+	$("#G3-TXTVIEW").text("");//TXTVIEW 신규초기화
+	$('#G3-HTMLVIEW').summernote('reset'); //기존 데이터 지우기
+	signaturePad_G3_SIGNPAD.clear();
+	$("#G3-ICONFILE-LINK").attr("href","");//ICONFILE NEW
+	$("#G3-ICONFILE-NM").text("");//ICONFILE NEW
+    $("#G3-IMGTYPE4 > option").each(function(index,item){
+      alog(item);
+      item.selected = false; //전체 선택 해제
+    });
+	$("#G3-ADDDT").val("");//생성일 신규초기화	
+	alog("DETAILNew30---------------end");
 }
 function G3_SEARCH(data,token){
 	alog("(FORMVIEW) G3_SEARCH---------------start");
@@ -1119,104 +1218,4 @@ function G3_SEARCH(data,token){
 	}
 	alog("(FORMVIEW) G3_SEARCH---------------end");
 
-}
-//	
-function G3_NEW(){
-	alog("[FromView] G3_NEW---------------start");
-	$("#G3-CTLCUD").val("C");
-	//PMGIO 로직
-	$("#G3-ICONSEQ").val("");//seq 신규초기화	
-	$("#G3-IMGNM").val("");//IMGNM 신규초기화	
-	$("#G3-IMGSIZE").val("");//IMGSIZE 신규초기화	
-	$("#G3-IMGSVRNM").val("");//IMGSVRNM 신규초기화	
-	$("#G3-IMGHASH").val("");//IMGHASH 신규초기화	
-	$("#G3-IMGTYPE2").val("");//IMGTYPE2 신규초기화	
-	//G3-IMGTYPE3  NEW 신규일때 할게 있나?
-	obj_G3_CODEMIRROR.setValue(""); // CODEMIRROR값 비우기
-	$("#G3-TXTAREA").val("");//TXTAREA 신규초기화
-	$("#G3-TXTVIEW").text("");//TXTVIEW 신규초기화
-	$('#G3-HTMLVIEW').summernote('reset'); //기존 데이터 지우기
-	signaturePad_G3_SIGNPAD.clear();
-	$("#G3-ICONFILE-LINK").attr("href","");//ICONFILE NEW
-	$("#G3-ICONFILE-NM").text("");//ICONFILE NEW
-    $("#G3-IMGTYPE4 > option").each(function(index,item){
-      alog(item);
-      item.selected = false; //전체 선택 해제
-    });
-	$("#G3-ADDDT").val("");//생성일 신규초기화	
-	alog("DETAILNew30---------------end");
-}
-//FORMVIEW DELETE
-function G3_DELETE(token){
-	alog("G3_DELETE---------------start");
-
-	//조회했는지 확인하기
-	if( $("#G3-CTLCUD").val() != "R" ){
-		alert("조회된 것만 삭제 가능합니다.");
-		return;
-	}
-	//확인
-	if(!confirm("정말로 삭제하시겠습니까?")){
-		return;
-	}
-	
-	//삭제처리 명령어
-	$("#G3-CTLCUD").val("D");
-	//post 만들기
-	sendFormData = new FormData($("#condition")[0]);
-	var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG3 != "undefined" && lastinputG3 != null ){
-		var tKeys = lastinputG3.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG3.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG3.get(tKeys[i])); 
-		}
-	}
-
-	$.ajax({
-		type : "POST",
-		url : url_G3_DELETE + "&TOKEN=" + token + "&" + conAllData,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		success: function(tdata){
-			alog(tdata);
-			data = jQuery.parseJSON(tdata);
-			//alert(data);
-			if(data && data.RTN_CD == "200"){
-				if(typeof(data.GRP_DATA) == "undefined" || data.GRP_DATA[0] == null || typeof(data.GRP_DATA[0].RTN_DATA) == "undefined"){
-					msgNotice("오류를 발생하지 않았으나, 처리 내역이 없습니다.(GRP_DATA is null, SQL미등록)",1);
-				}else{
-					affectedRows = data.GRP_DATA[0].RTN_DATA;
-					msgNotice("정상적으로 삭제되었습니다. [영향받은건수:" + affectedRows + "]",1);
-				}
-			}else{
-				msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
-			}
-		},
-		error: function(error){
-			alog("Error:");
-			alog(error);
-		}
-	});
-}
-function G3_MODIFY(){
-       alog("[FromView] G3_MODIFY---------------start");
-	if( $("#G3-CTLCUD").val() == "C" ){
-		alert("조회 후 수정 가능합니다. 신규 모드에서는 수정할 수 없습니다.")
-		return;
-	}
-	if( $("#G3-CTLCUD").val() == "D" ){
-		alert("조회 후 수정 가능합니다. 삭제 모드에서는 수정할 수 없습니다.")
-		return;
-	}
-
-	$("#G3-CTLCUD").val("U");
-       alog("[FromView] G3_MODIFY---------------end");
-}
-//새로고침	
-function G3_RELOAD(token){
-	alog("G3_RELOAD-----------------start");
-	G3_SEARCH(lastinputG3,token);
 }

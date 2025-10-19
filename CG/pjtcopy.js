@@ -798,6 +798,11 @@ function G5_INIT(){
 	alog("G5_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+//검색조건 초기화
+function G1_RESET(){
+	alog("G1_RESET--------------------------start");
+	$('#condition')[0].reset();
+}
 //, 저장	
 function G1_SAVE(token){
  alog("G1_SAVE-------------------start");
@@ -850,11 +855,6 @@ function G1_SEARCHALL(token){
 	//  호출
 	G5_SEARCH(lastinputG5,token);
 	alog("G1_SEARCHALL--------------------------end");
-}
-//검색조건 초기화
-function G1_RESET(){
-	alog("G1_RESET--------------------------start");
-	$('#condition')[0].reset();
 }
 	//from CFG
 function G2_SAVE(token){
@@ -1144,6 +1144,14 @@ function G3_RELOAD(token){
   alog("G3_RELOAD-----------------start");
   G3_SEARCH(lastinputG3,token);
 }
+    function G4_HIDDENCOL(){
+		alog("G4_HIDDENCOL()..................start");
+        if(isToggleHiddenColG4){
+            isToggleHiddenColG4 = false;     }else{
+            isToggleHiddenColG4 = true;
+        }
+		alog("G4_HIDDENCOL()..................end");
+    }
 
 
 
@@ -1224,14 +1232,6 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
-    function G4_HIDDENCOL(){
-		alog("G4_HIDDENCOL()..................start");
-        if(isToggleHiddenColG4){
-            isToggleHiddenColG4 = false;     }else{
-            isToggleHiddenColG4 = true;
-        }
-		alog("G4_HIDDENCOL()..................end");
-    }
 //새로고침	
 function G4_RELOAD(token){
   alog("G4_RELOAD-----------------start");
@@ -1342,11 +1342,6 @@ function G4_SAVE(token){
 	
 	alog("G4_SAVE()------------end");
 }
-    function G5_ROWDELETE(){	
-        alog("G5_ROWDELETE()------------start");
-        delRow(mygridG5);
-        alog("G5_ROWDELETE()------------start");
-    }
 //to FILE
 function G5_CHKSAVE(token){
 	alog("G5_CHKSAVE()------------start");
@@ -1447,6 +1442,14 @@ function G5_SAVE(token){
 	
 	alog("G5_SAVE()------------end");
 }
+    function G5_HIDDENCOL(){
+		alog("G5_HIDDENCOL()..................start");
+        if(isToggleHiddenColG5){
+            isToggleHiddenColG5 = false;     }else{
+            isToggleHiddenColG5 = true;
+        }
+		alog("G5_HIDDENCOL()..................end");
+    }
 
 
 
@@ -1527,16 +1530,13 @@ function G5_SEARCH(tinput,token){
         alog("G5_SEARCH()------------end");
     }
 
-    function G5_HIDDENCOL(){
-		alog("G5_HIDDENCOL()..................start");
-        if(isToggleHiddenColG5){
-            isToggleHiddenColG5 = false;     }else{
-            isToggleHiddenColG5 = true;
-        }
-		alog("G5_HIDDENCOL()..................end");
-    }
 //새로고침	
 function G5_RELOAD(token){
   alog("G5_RELOAD-----------------start");
   G5_SEARCH(lastinputG5,token);
 }
+    function G5_ROWDELETE(){	
+        alog("G5_ROWDELETE()------------start");
+        delRow(mygridG5);
+        alog("G5_ROWDELETE()------------start");
+    }

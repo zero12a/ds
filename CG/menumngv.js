@@ -844,6 +844,11 @@ function G6_INIT(){
   alog("G6_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+//검색조건 초기화
+function G1_RESET(){
+	alog("G1_RESET--------------------------start");
+	$('#condition')[0].reset();
+}
 // CONDITIONSearch	
 function G1_SEARCHALL(token){
 	alog("G1_SEARCHALL--------------------------start");
@@ -859,99 +864,38 @@ function G1_SEARCHALL(token){
 	G4_SEARCH(lastinputG4,token);
 	alog("G1_SEARCHALL--------------------------end");
 }
-//검색조건 초기화
-function G1_RESET(){
-	alog("G1_RESET--------------------------start");
-	$('#condition')[0].reset();
-}
-//그리드 조회(MNU1)	
-function G2_SEARCH(tinput,token){
-	alog("G2_SEARCH()------------start");
+//
+//행추가
+function G2_ROWADD(tinput,token){
+	alog("G2_ROWADD()------------start");
 
-	if(G2_REQUEST_ON == true){
-		alert("이전 요청을 서버에서 처리 중입니다. 잠시 기다려 주세요.");
+	if( !(lastinputG2)	){
+		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
 		return;
 	}
-	G2_REQUEST_ON = true;
 
 
-    $$("wixdtG2").clearAll();
-	wixdtG2.markSorting("",""); //정렬 arrow 클리어
-	//post 만들기
-	sendFormData = new FormData($("#condition")[0]);
-	var conAllData = "";
-		//tinput 넣어주기
-		if(typeof tinput != "undefined" && tinput != null){
-			var tKeys = tinput.keys();
-			for(i=0;i<tKeys.length;i++) {
-				sendFormData.append(tKeys[i],tinput.get(tKeys[i]));
-				//console.log(tKeys[i]+ '='+ tinput.get(tKeys[i])); 
-			}
-		}
+	var rowId =  webix.uid();
 
-	//불러오기
-	$.ajax({
-		type : "POST",
-		url : url_G2_SEARCH+"&TOKEN=" + token + "&" + conAllData ,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: true,
-		success: function(data){
-			alog("   gridG2 json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+	var rowData = {
+        id: rowId
+		,"MNU1_SEQ" : ""
+		,"FOLDER_YN" : ""
+		,"FOLDER_NM" : ""
+		,"PGMID" : ""
+		,"MNU_ICON" : ""
+		,"MNU_ORD" : ""
+		,"ADD_DT" : ""
+		,"MOD_DT" : ""
+		, changeState: true
+		, changeCud: "inserted"
+	};
 
-			//그리드에 데이터 반영
-			if(data.RTN_CD == "200"){
-				var row_cnt = 0;
-				if(data.RTN_DATA){
-					row_cnt = data.RTN_DATA.rows.length;
-					$("#spanG2Cnt").text(row_cnt);
-   					var beforeDate = new Date();
-					$$("wixdtG2").parse(data.RTN_DATA.rows,"json");
-					var afterDate = new Date();
-					alog("	parse render time(ms) = " + (afterDate - beforeDate));
 
-			}else{
-				$("#spanG2Cnt").text("-");
-			}
-			msgNotice("[MNU1] 조회 성공했습니다. ("+row_cnt+"건)",1);
-
-			}else{
-				msgError("[MNU1] 서버 조회중 에러가 발생했습니다.RTN_CD : " + data.RTN_CD + "ERR_CD : " + data.ERR_CD + "RTN_MSG :" + data.RTN_MSG,3);
-			}
-		},
-		error: function(error){
-
-			alog("Response ajax error occer.");
-			if(error.status == 200){
-				msgError("[MNU1] Ajax http error ( Response status is " + error.status + ", Not json format, Check console log )", 3);
-				alog("	responseText" + error.responseText);//not json format
-			}else if(error.status == 500){
-				msgError("[MNU1] Ajax http error ( Response status is " + error.status + ", Server error occer, Check console log )", 3);
-				alog("	responseText" + error.responseText); //Server don't response
-			}else if(error.status == 0){
-				msgError("[MNU1] Ajax http error ( Response status is " + error.status + ", Server don't resonse, Check console log )", 3);
-				alog("	responseJSON = " + error.responseJSON); //Server don't response
-			}else{
-				msgError("[MNU1] Ajax http error ( Response status is " + error.status + ", Server unknown resonse, Check console log )", 3);
-				alog(error); //Server don't response
-			}
-
-		}
-
-,
-		complete : function() {
-			G2_REQUEST_ON = false;
-		}
-	});
-        alog("G2_SEARCH()------------end");
-    }
-
+	$$("wixdtG2").add(rowData,0);
+    $$("wixdtG2").addRowCss(rowId, "fontStateInsert");
+    alog("add row rowId : " + rowId);
+}
 //행삭제
 function G2_ROWDELETE(tinput,token){
 	alog("G2_ROWDELETE()------------start");
@@ -1101,73 +1045,99 @@ function G2_SAVE(token){
 	
 	alog("G2_SAVE()------------end");
 }
-//
-//행추가
-function G2_ROWADD(tinput,token){
-	alog("G2_ROWADD()------------start");
-
-	if( !(lastinputG2)	){
-		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
-		return;
-	}
-
-
-	var rowId =  webix.uid();
-
-	var rowData = {
-        id: rowId
-		,"MNU1_SEQ" : ""
-		,"FOLDER_YN" : ""
-		,"FOLDER_NM" : ""
-		,"PGMID" : ""
-		,"MNU_ICON" : ""
-		,"MNU_ORD" : ""
-		,"ADD_DT" : ""
-		,"MOD_DT" : ""
-		, changeState: true
-		, changeCud: "inserted"
-	};
-
-
-	$$("wixdtG2").add(rowData,0);
-    $$("wixdtG2").addRowCss(rowId, "fontStateInsert");
-    alog("add row rowId : " + rowId);
-}
 //새로고침	
 function G2_RELOAD(token){
   alog("G2_RELOAD-----------------start");
   G2_SEARCH(lastinputG2,token);
 }
-//
-//행추가
-function G3_ROWADD(tinput,token){
-	alog("G3_ROWADD()------------start");
+//그리드 조회(MNU1)	
+function G2_SEARCH(tinput,token){
+	alog("G2_SEARCH()------------start");
 
-	if( !(lastinputG3)		|| lastinputG3.get("G3-MNU1_SEQ") == ""	){
-		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
+	if(G2_REQUEST_ON == true){
+		alert("이전 요청을 서버에서 처리 중입니다. 잠시 기다려 주세요.");
 		return;
 	}
+	G2_REQUEST_ON = true;
 
 
-	var rowId =  webix.uid();
+    $$("wixdtG2").clearAll();
+	wixdtG2.markSorting("",""); //정렬 arrow 클리어
+	//post 만들기
+	sendFormData = new FormData($("#condition")[0]);
+	var conAllData = "";
+		//tinput 넣어주기
+		if(typeof tinput != "undefined" && tinput != null){
+			var tKeys = tinput.keys();
+			for(i=0;i<tKeys.length;i++) {
+				sendFormData.append(tKeys[i],tinput.get(tKeys[i]));
+				//console.log(tKeys[i]+ '='+ tinput.get(tKeys[i])); 
+			}
+		}
 
-	var rowData = {
-        id: rowId
-		,"MNU2_SEQ" : ""
-		,"MNU1_SEQ" : lastinputG3.get("G2-MNU1_SEQ")
-		,"PGMID" : ""
-		,"MNU_ORD" : ""
-		,"ADD_DT" : ""
-		,"MOD_DT" : ""
-		, changeState: true
-		, changeCud: "inserted"
-	};
+	//불러오기
+	$.ajax({
+		type : "POST",
+		url : url_G2_SEARCH+"&TOKEN=" + token + "&" + conAllData ,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: true,
+		success: function(data){
+			alog("   gridG2 json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
 
+			//그리드에 데이터 반영
+			if(data.RTN_CD == "200"){
+				var row_cnt = 0;
+				if(data.RTN_DATA){
+					row_cnt = data.RTN_DATA.rows.length;
+					$("#spanG2Cnt").text(row_cnt);
+   					var beforeDate = new Date();
+					$$("wixdtG2").parse(data.RTN_DATA.rows,"json");
+					var afterDate = new Date();
+					alog("	parse render time(ms) = " + (afterDate - beforeDate));
 
-	$$("wixdtG3").add(rowData,0);
-    $$("wixdtG3").addRowCss(rowId, "fontStateInsert");
-    alog("add row rowId : " + rowId);
-}
+			}else{
+				$("#spanG2Cnt").text("-");
+			}
+			msgNotice("[MNU1] 조회 성공했습니다. ("+row_cnt+"건)",1);
+
+			}else{
+				msgError("[MNU1] 서버 조회중 에러가 발생했습니다.RTN_CD : " + data.RTN_CD + "ERR_CD : " + data.ERR_CD + "RTN_MSG :" + data.RTN_MSG,3);
+			}
+		},
+		error: function(error){
+
+			alog("Response ajax error occer.");
+			if(error.status == 200){
+				msgError("[MNU1] Ajax http error ( Response status is " + error.status + ", Not json format, Check console log )", 3);
+				alog("	responseText" + error.responseText);//not json format
+			}else if(error.status == 500){
+				msgError("[MNU1] Ajax http error ( Response status is " + error.status + ", Server error occer, Check console log )", 3);
+				alog("	responseText" + error.responseText); //Server don't response
+			}else if(error.status == 0){
+				msgError("[MNU1] Ajax http error ( Response status is " + error.status + ", Server don't resonse, Check console log )", 3);
+				alog("	responseJSON = " + error.responseJSON); //Server don't response
+			}else{
+				msgError("[MNU1] Ajax http error ( Response status is " + error.status + ", Server unknown resonse, Check console log )", 3);
+				alog(error); //Server don't response
+			}
+
+		}
+
+,
+		complete : function() {
+			G2_REQUEST_ON = false;
+		}
+	});
+        alog("G2_SEARCH()------------end");
+    }
+
 //새로고침	
 function G3_RELOAD(token){
   alog("G3_RELOAD-----------------start");
@@ -1261,6 +1231,36 @@ function G3_SEARCH(tinput,token){
         alog("G3_SEARCH()------------end");
     }
 
+//
+//행추가
+function G3_ROWADD(tinput,token){
+	alog("G3_ROWADD()------------start");
+
+	if( !(lastinputG3)		|| lastinputG3.get("G3-MNU1_SEQ") == ""	){
+		msgError("조회 후에 행추가 가능합니다. 또는 상속값이 없습니다.",3);
+		return;
+	}
+
+
+	var rowId =  webix.uid();
+
+	var rowData = {
+        id: rowId
+		,"MNU2_SEQ" : ""
+		,"MNU1_SEQ" : lastinputG3.get("G2-MNU1_SEQ")
+		,"PGMID" : ""
+		,"MNU_ORD" : ""
+		,"ADD_DT" : ""
+		,"MOD_DT" : ""
+		, changeState: true
+		, changeCud: "inserted"
+	};
+
+
+	$$("wixdtG3").add(rowData,0);
+    $$("wixdtG3").addRowCss(rowId, "fontStateInsert");
+    alog("add row rowId : " + rowId);
+}
 //행삭제
 function G3_ROWDELETE(tinput,token){
 	alog("G3_ROWDELETE()------------start");
@@ -1444,85 +1444,6 @@ function G4_ROWADD(tinput,token){
     $$("wixdtG4").addRowCss(rowId, "fontStateInsert");
     alog("add row rowId : " + rowId);
 }
-//미지정PGM
-function G4_CHKSAVE2(token){
-	alog("G4_CHKSAVE2()------------start");
-
-	if(G4_REQUEST_ON == true){
-		alert("이전 요청을 서버에서 처리 중입니다. 잠시 기다려 주세요.");
-		return;
-	}
-	G4_REQUEST_ON = true;
-
-    allData = $$("wixdtG4").serialize(true);
-    //alog(allData);
-    var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));        //post 만들기
-		sendFormData = new FormData($("#condition")[0]);
-		var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG4 != "undefined" && lastinputG4 != null){
-		var tKeys = lastinputG4.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG4.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG4.get(tKeys[i])); 
-		}
-	}
-	sendFormData.append("G4-JSON" , myJsonString);
-	allData = $$("wixdtG4").serialize(true);
-	//alog(allData);
-	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
-	sendFormData.append("G4-JSON",myJsonString);
-//폼뷰 G6는 params 객체에 직접 입력	
-	//폼에 파일 유무 : N
-	sendFormData.append("G6-CTLCUD",$("#G6-CTLCUD").val());
-	sendFormData.append("G6-MNU_ORD",$("#G6-MNU_ORD").val());	//MNU_ORD 전송객체에 넣기
-	sendFormData.append("G6-MNU1_SEQ",$("#G6-MNU1_SEQ").val());	//MNU1_SEQ 전송객체에 넣기
-
-	$.ajax({
-		type : "POST",
-		url : url_G4_CHKSAVE2+"&TOKEN=" + token + "&" + conAllData ,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: false,
-		success: function(data){
-			alog("   json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-
-			//그리드에 데이터 반영
-			saveToGroup(data);
-
-		},
-		error: function(error){
-
-			alog("Response ajax error occer.");
-			if(error.status == 200){
-				msgError("[미지정PGM] Ajax http error ( Response status is " + error.status + ", Not json format, Check console log )", 3);
-				alog("	responseText" + error.responseText);//not json format
-			}else if(error.status == 500){
-				msgError("[미지정PGM] Ajax http error ( Response status is " + error.status + ", Server error occer, Check console log )", 3);
-				alog("	responseText" + error.responseText); //Server don't response
-			}else if(error.status == 0){
-				msgError("[미지정PGM] Ajax http error ( Response status is " + error.status + ", Server don't resonse, Check console log )", 3);
-				alog("	responseJSON = " + error.responseJSON); //Server don't response
-			}else{
-				msgError("[미지정PGM] Ajax http error ( Response status is " + error.status + ", Server unknown resonse, Check console log )", 3);
-				alog(error); //Server don't response
-			}
-
-		},
-		complete : function() {
-			G4_REQUEST_ON = false;
-		}
-
-	});
-	
-	alog("G4_CHKSAVE2()------------end");
-}
 //그리드 조회(미지정PGM)	
 function G4_SEARCH(tinput,token){
 	alog("G4_SEARCH()------------start");
@@ -1611,6 +1532,85 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
+//미지정PGM
+function G4_CHKSAVE2(token){
+	alog("G4_CHKSAVE2()------------start");
+
+	if(G4_REQUEST_ON == true){
+		alert("이전 요청을 서버에서 처리 중입니다. 잠시 기다려 주세요.");
+		return;
+	}
+	G4_REQUEST_ON = true;
+
+    allData = $$("wixdtG4").serialize(true);
+    //alog(allData);
+    var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));        //post 만들기
+		sendFormData = new FormData($("#condition")[0]);
+		var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG4 != "undefined" && lastinputG4 != null){
+		var tKeys = lastinputG4.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG4.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG4.get(tKeys[i])); 
+		}
+	}
+	sendFormData.append("G4-JSON" , myJsonString);
+	allData = $$("wixdtG4").serialize(true);
+	//alog(allData);
+	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
+	sendFormData.append("G4-JSON",myJsonString);
+//폼뷰 G6는 params 객체에 직접 입력	
+	//폼에 파일 유무 : N
+	sendFormData.append("G6-CTLCUD",$("#G6-CTLCUD").val());
+	sendFormData.append("G6-MNU_ORD",$("#G6-MNU_ORD").val());	//MNU_ORD 전송객체에 넣기
+	sendFormData.append("G6-MNU1_SEQ",$("#G6-MNU1_SEQ").val());	//MNU1_SEQ 전송객체에 넣기
+
+	$.ajax({
+		type : "POST",
+		url : url_G4_CHKSAVE2+"&TOKEN=" + token + "&" + conAllData ,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: false,
+		success: function(data){
+			alog("   json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+
+			//그리드에 데이터 반영
+			saveToGroup(data);
+
+		},
+		error: function(error){
+
+			alog("Response ajax error occer.");
+			if(error.status == 200){
+				msgError("[미지정PGM] Ajax http error ( Response status is " + error.status + ", Not json format, Check console log )", 3);
+				alog("	responseText" + error.responseText);//not json format
+			}else if(error.status == 500){
+				msgError("[미지정PGM] Ajax http error ( Response status is " + error.status + ", Server error occer, Check console log )", 3);
+				alog("	responseText" + error.responseText); //Server don't response
+			}else if(error.status == 0){
+				msgError("[미지정PGM] Ajax http error ( Response status is " + error.status + ", Server don't resonse, Check console log )", 3);
+				alog("	responseJSON = " + error.responseJSON); //Server don't response
+			}else{
+				msgError("[미지정PGM] Ajax http error ( Response status is " + error.status + ", Server unknown resonse, Check console log )", 3);
+				alog(error); //Server don't response
+			}
+
+		},
+		complete : function() {
+			G4_REQUEST_ON = false;
+		}
+
+	});
+	
+	alog("G4_CHKSAVE2()------------end");
+}
 //미지정PGM
 function G4_CHKSAVE1(token){
 	alog("G4_CHKSAVE1()------------start");

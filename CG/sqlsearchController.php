@@ -32,6 +32,7 @@ $log = getLoggerStdout(
 	, "REQTOKEN" => $reqToken
 	, "RESTOKEN" => $resToken
 	, "LOG_LEVEL" => Monolog\Logger::ERROR
+	, "FORMAT" => "LINE" //JSON, LINE
 	)
 );
 $log->info("SqlsearchControl___________________________start");

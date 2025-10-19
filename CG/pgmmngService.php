@@ -152,7 +152,7 @@ class pgmmngService
 		echo json_encode($rtnVal);
 		$log->info("PGMMNGService-goG3Save________________________end");
 	}
-	//PGM, 조회
+	//PGM, 조회1
 	public function goG4Search(){
 		global $REQ,$CFG,$_RTIME, $log;
 		$rtnVal = new stdclass();
@@ -167,9 +167,9 @@ class pgmmngService
 		$GRID["GRPTYPE"] = "GRID_DHTMLX";
 		$GRID["KEYCOLIDX"] = 1; // KEY 컬럼, PGMSEQ
 
-		//조회
+		//조회1
 		//V_GRPNM : PGM
-		array_push($GRID["SQL"], $this->DAO->sql6($REQ)); //SEARCH, 조회,PGM
+		array_push($GRID["SQL"], $this->DAO->sql6($REQ)); //SEARCH, 조회1,PGM
 	//암호화컬럼
 		$GRID["COLCRYPT"] = array();
 		//필수 여부 검사

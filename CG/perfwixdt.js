@@ -444,88 +444,47 @@ function G1_SEARCHALL(token){
 	G2_SEARCH(lastinputG2,token);
 	alog("G1_SEARCHALL--------------------------end");
 }
-//rst3
-function G2_SV(token){
-	alog("G2_SV()------------start");
+//새로고침	
+function G2_RELOAD(token){
+  alog("G2_RELOAD-----------------start");
+  G2_SEARCH(lastinputG2,token);
+}
+//엑셀 다운받기 - 렌더링 전값인 CD (rst3)
+function G2_EDOWN(tinput,token){
+	alog("G2_EDOWN()------------start");
 
-	if(G2_REQUEST_ON == true){
-		alert("이전 요청을 서버에서 처리 중입니다. 잠시 기다려 주세요.");
-		return;
-	}
-	G2_REQUEST_ON = true;
-
-    allData = $$("wixdtG2").serialize(true);
-    //alog(allData);
-    var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));        //post 만들기
-		sendFormData = new FormData($("#condition")[0]);
-		var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG2 != "undefined" && lastinputG2 != null){
-		var tKeys = lastinputG2.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG2.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG2.get(tKeys[i])); 
-		}
-	}
-	sendFormData.append("G2-JSON" , myJsonString);
-	allData = $$("wixdtG2").serialize(true);
-	//alog(allData);
-	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
-	sendFormData.append("G2-JSON",myJsonString);
-
-	$.ajax({
-		type : "POST",
-		url : url_G2_SV+"&TOKEN=" + token + "&" + conAllData ,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: false,
-		success: function(data){
-			alog("   json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-
-			//그리드에 데이터 반영
-			saveToGroup(data);
-
-		},
-		error: function(error){
-
-			alog("Response ajax error occer.");
-			if(error.status == 200){
-				msgError("[rst3] Ajax http error ( Response status is " + error.status + ", Not json format, Check console log )", 3);
-				alog("	responseText" + error.responseText);//not json format
-			}else if(error.status == 500){
-				msgError("[rst3] Ajax http error ( Response status is " + error.status + ", Server error occer, Check console log )", 3);
-				alog("	responseText" + error.responseText); //Server don't response
-			}else if(error.status == 0){
-				msgError("[rst3] Ajax http error ( Response status is " + error.status + ", Server don't resonse, Check console log )", 3);
-				alog("	responseJSON = " + error.responseJSON); //Server don't response
-			}else{
-				msgError("[rst3] Ajax http error ( Response status is " + error.status + ", Server unknown resonse, Check console log )", 3);
-				alog(error); //Server don't response
+	webix.toExcel($$("wixdtG2"),{
+		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
+		, columns : {
+			"RSTSEQ": {header: "RSTSEQ", template: function(o){return o.RSTSEQ} }
+,			"PJTSEQ": {header: "PJTSEQ", template: function(o){return o.PJTSEQ} }
+,			"PGMSEQ": {header: "PGMSEQ", template: function(o){return o.PGMSEQ} }
+,			"FILETYPE": {header: "FILETYPE", template: function(o){return o.FILETYPE} }
+,			"VERSEQ": {header: "VERSEQ", template: function(o){return o.VERSEQ} }
+,			"SRCORD": {header: "SRCORD", template: function(o){return o.SRCORD} }
+,			"SRCTXT": {header: "SRCTXT", template: function(o){return o.SRCTXT} }
+,			"ADDDT": {header: "ADDDT", template: function(o){return o.ADDDT} }
+,			"MODDT": {header: "MODDT", template: function(o){return o.MODDT} }
 			}
+		}   
+	);
 
-		},
-		complete : function() {
-			G2_REQUEST_ON = false;
+
+	alog("G2_EDOWN()------------end");
+}//사용자정의함수 : H
+function G2_HDNCOL(token){
+	alog("G2_HDNCOL-----------------start");
+
+	if(isToggleHiddenColG2){
+		$$("wixdtG2").hideColumn("PJTSEQ");
+		isToggleHiddenColG2 = false;
+	}else{
+		$$("wixdtG2").showColumn("PJTSEQ");
+			isToggleHiddenColG2 = true;
 		}
 
-	});
-	
-	alog("G2_SV()------------end");
-}
-//사용자정의함수 : 경고
-function G2_UDEF(token){
-	alog("G2_UDEF-----------------start");
-alert('userdef');
-
-
-	alog("G2_UDEF-----------------end");
-}
+		alog("G2_HDNCOL-----------------end");
+	}
 //그리드 조회(rst3)	
 function G2_SEARCH(tinput,token){
 	alog("G2_SEARCH()------------start");
@@ -614,29 +573,7 @@ function G2_SEARCH(tinput,token){
         alog("G2_SEARCH()------------end");
     }
 
-//엑셀 다운받기 - 렌더링 전값인 CD (rst3)
-function G2_EDOWN(tinput,token){
-	alog("G2_EDOWN()------------start");
-
-	webix.toExcel($$("wixdtG2"),{
-		filterHTML:true //HTML제거하기 ( 제거안하면 템플릿 html이 모두 출력됨 )
-		, columns : {
-			"RSTSEQ": {header: "RSTSEQ", template: function(o){return o.RSTSEQ} }
-,			"PJTSEQ": {header: "PJTSEQ", template: function(o){return o.PJTSEQ} }
-,			"PGMSEQ": {header: "PGMSEQ", template: function(o){return o.PGMSEQ} }
-,			"FILETYPE": {header: "FILETYPE", template: function(o){return o.FILETYPE} }
-,			"VERSEQ": {header: "VERSEQ", template: function(o){return o.VERSEQ} }
-,			"SRCORD": {header: "SRCORD", template: function(o){return o.SRCORD} }
-,			"SRCTXT": {header: "SRCTXT", template: function(o){return o.SRCTXT} }
-,			"ADDDT": {header: "ADDDT", template: function(o){return o.ADDDT} }
-,			"MODDT": {header: "MODDT", template: function(o){return o.MODDT} }
-			}
-		}   
-	);
-
-
-	alog("G2_EDOWN()------------end");
-}//엑셀 다운받기 - 렌더링 후값인 NM (rst3)
+//엑셀 다운받기 - 렌더링 후값인 NM (rst3)
 function G2_DOWN(tinput,token){
 	alog("G2_DOWN()------------start");
 
@@ -658,22 +595,85 @@ function G2_DOWN(tinput,token){
 
 
 	alog("G2_DOWN()------------end");
-}//새로고침	
-function G2_RELOAD(token){
-  alog("G2_RELOAD-----------------start");
-  G2_SEARCH(lastinputG2,token);
-}
-//사용자정의함수 : H
-function G2_HDNCOL(token){
-	alog("G2_HDNCOL-----------------start");
+}//사용자정의함수 : 경고
+function G2_UDEF(token){
+	alog("G2_UDEF-----------------start");
+alert('userdef');
 
-	if(isToggleHiddenColG2){
-		$$("wixdtG2").hideColumn("PJTSEQ");
-		isToggleHiddenColG2 = false;
-	}else{
-		$$("wixdtG2").showColumn("PJTSEQ");
-			isToggleHiddenColG2 = true;
+
+	alog("G2_UDEF-----------------end");
+}
+//rst3
+function G2_SV(token){
+	alog("G2_SV()------------start");
+
+	if(G2_REQUEST_ON == true){
+		alert("이전 요청을 서버에서 처리 중입니다. 잠시 기다려 주세요.");
+		return;
+	}
+	G2_REQUEST_ON = true;
+
+    allData = $$("wixdtG2").serialize(true);
+    //alog(allData);
+    var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));        //post 만들기
+		sendFormData = new FormData($("#condition")[0]);
+		var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG2 != "undefined" && lastinputG2 != null){
+		var tKeys = lastinputG2.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG2.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG2.get(tKeys[i])); 
+		}
+	}
+	sendFormData.append("G2-JSON" , myJsonString);
+	allData = $$("wixdtG2").serialize(true);
+	//alog(allData);
+	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
+	sendFormData.append("G2-JSON",myJsonString);
+
+	$.ajax({
+		type : "POST",
+		url : url_G2_SV+"&TOKEN=" + token + "&" + conAllData ,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: false,
+		success: function(data){
+			alog("   json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+
+			//그리드에 데이터 반영
+			saveToGroup(data);
+
+		},
+		error: function(error){
+
+			alog("Response ajax error occer.");
+			if(error.status == 200){
+				msgError("[rst3] Ajax http error ( Response status is " + error.status + ", Not json format, Check console log )", 3);
+				alog("	responseText" + error.responseText);//not json format
+			}else if(error.status == 500){
+				msgError("[rst3] Ajax http error ( Response status is " + error.status + ", Server error occer, Check console log )", 3);
+				alog("	responseText" + error.responseText); //Server don't response
+			}else if(error.status == 0){
+				msgError("[rst3] Ajax http error ( Response status is " + error.status + ", Server don't resonse, Check console log )", 3);
+				alog("	responseJSON = " + error.responseJSON); //Server don't response
+			}else{
+				msgError("[rst3] Ajax http error ( Response status is " + error.status + ", Server unknown resonse, Check console log )", 3);
+				alog(error); //Server don't response
+			}
+
+		},
+		complete : function() {
+			G2_REQUEST_ON = false;
 		}
 
-		alog("G2_HDNCOL-----------------end");
-	}
+	});
+	
+	alog("G2_SV()------------end");
+}

@@ -29,6 +29,7 @@ $log = getLoggerStdout(
 	, "REQTOKEN" => $reqToken
 	, "RESTOKEN" => $resToken
 	, "LOG_LEVEL" => Monolog\Logger::ERROR
+	, "FORMAT" => "LINE" //JSON, LINE
 	)
 );
 $log->info("RdmsgboxmngControl___________________________start");
@@ -62,7 +63,7 @@ $PGM_CFG["SECTYPE"] = "NORMAL";
 $PGM_CFG["SQLTXT"] = array();
 array_push($_RTIME,array("[TIME 30.AUTH_CHECK]",microtime(true)));
 //FILE먼저 : G1, 
-//FILE먼저 : G2, 수신목록
+//FILE먼저 : G2, 수신목록1
 //FILE먼저 : G3, 수신상세
 $REQ["G3-CTLCUD"] = reqPostString("G3-CTLCUD",2);
 
@@ -86,7 +87,7 @@ $REQ["G1-FROM_ADD_DT"] = getFilter($REQ["G1-FROM_ADD_DT"],"CLEARTEXT","/--미 �
 $REQ["G1-TO_ADD_DT"] = reqPostString("G1-TO_ADD_DT",14);//~, RORW=RW, INHERIT=N, METHOD=POST
 $REQ["G1-TO_ADD_DT"] = getFilter($REQ["G1-TO_ADD_DT"],"CLEARTEXT","/--미 정의--/");	
 
-//G2, 수신목록 - RW속성 오브젝트만 필터 적용 ( RO속성은 제외 )
+//G2, 수신목록1 - RW속성 오브젝트만 필터 적용 ( RO속성은 제외 )
 $REQ["G2-MSG_BOX_SEQ"] = reqPostNumber("G2-MSG_BOX_SEQ",30);//SEQ, RORW=, INHERIT=Y	
 $REQ["G2-MSG_BOX_SEQ"] = getFilter($REQ["G2-MSG_BOX_SEQ"],"","//");	
 
@@ -98,7 +99,7 @@ $REQ["G3-TITLE"] = getFilter($REQ["G3-TITLE"],"","//");
 $REQ["G3-BODY"] = reqPostString("G3-BODY",4000);//BODY, RORW=RW, INHERIT=N	
 $REQ["G3-BODY"] = getFilter($REQ["G3-BODY"],"","//");	
 //,  입력값 필터 
-$REQ["G2-JSON"] = json_decode($_POST["G2-JSON"],true);//수신목록	
+$REQ["G2-JSON"] = json_decode($_POST["G2-JSON"],true);//수신목록1	
 //,  입력값 필터 
 $REQ["G2-JSON"] = filterGridJson(
 	array(
@@ -145,13 +146,13 @@ switch ($ctl){
 		echo $objService->goG1Save(); //, 저장
 		break;
 	case "G2_SEARCH" :
-		echo $objService->goG2Search(); //수신목록, 조회
+		echo $objService->goG2Search(); //수신목록1, 조회
 		break;
 	case "G2_SAVE" :
-		echo $objService->goG2Save(); //수신목록, 저장
+		echo $objService->goG2Save(); //수신목록1, 저장
 		break;
 	case "G2_CHKUPD" :
-		echo $objService->goG2Chkupd(); //수신목록, 선택삭제
+		echo $objService->goG2Chkupd(); //수신목록1, 선택삭제
 		break;
 	case "G3_SEARCH" :
 		echo $objService->goG3Search(); //수신상세, 조회

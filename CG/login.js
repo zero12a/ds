@@ -129,6 +129,11 @@ function G2_INIT(){
   alog("G2_INIT()-------------------------end");
 }
 //D146 그룹별 기능 함수 출력		
+//검색조건 초기화
+function G1_RESET(){
+	alog("G1_RESET--------------------------start");
+	$('#condition')[0].reset();
+}
 //입력폼, 저장	
 function G1_SAVE(token){
  alog("G1_SAVE-------------------start");
@@ -173,10 +178,72 @@ function G1_SEARCHALL(token){
 	G2_SEARCH(lastinputG2,token);
 	alog("G1_SEARCHALL--------------------------end");
 }
-//검색조건 초기화
-function G1_RESET(){
-	alog("G1_RESET--------------------------start");
-	$('#condition')[0].reset();
+//디테일 검색	
+function G2_SEARCH(tinput,token){
+       alog("(FORMVIEW) G2_SEARCH---------------start");
+
+	//post 만들기
+	sendFormData = new FormData($("#condition")[0]);
+	var conAllData = "";
+	if(typeof tinput != "undefined" && tinput != null){
+		var tKeys = tinput.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],tinput.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ tinput.get(tKeys[i])); 
+		}
+	}
+
+	$.ajax({
+        type : "POST",
+        url : url_G2_SEARCH+"&TOKEN=" + token + "&" + conAllData ,
+        data : sendFormData,
+		processData: false,
+		contentType: false,
+        dataType: "json",
+        success: function(data){
+            alog(data);
+
+			if(data && data.RTN_CD == "200"){
+				if(data.RTN_DATA){
+					msgNotice("정상적으로 조회되었습니다.",1);
+				}else{
+					msgNotice("정상적으로 조회되었으나 데이터가 없습니다.",2);
+					return;
+				}
+			}else{
+				msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
+				return;
+			}
+
+            //모드 변경하기
+            $("#G2-CTLCUD").val("R");
+			//SETVAL  가져와서 세팅
+			$("#G2-USR_ID").val(data.RTN_DATA.USR_ID);//USR_ID 변수세팅
+			$("#G2-USR_SEQ").val(data.RTN_DATA.USR_SEQ);//USE_SEQ 변수세팅
+			$("#G2-USR_NM").val(data.RTN_DATA.USR_NM);//USR_NM 변수세팅
+			$("#G2-USR_PWD").val(data.RTN_DATA.USR_PWD);//USR_PWD 변수세팅
+        },
+        error: function(error){
+            alog("Error:");
+            alog(error);
+        }
+    });
+    alog("(FORMVIEW) G2_SEARCH---------------end");
+
+}
+function G2_EDIT(){
+       alog("[FromView] G2_EDIT---------------start");
+	if( $("#G2-CTLCUD").val() == "C" ){
+		alert("조회 후 수정 가능합니다. 신규 모드에서는 수정할 수 없습니다.")
+		return;
+	}
+	if( $("#G2-CTLCUD").val() == "D" ){
+		alert("조회 후 수정 가능합니다. 삭제 모드에서는 수정할 수 없습니다.")
+		return;
+	}
+
+	$("#G2-CTLCUD").val("U");
+       alog("[FromView] G2_EDIT---------------end");
 }
 //G2_SAVE
 //IO_FILE_YN = V/, G/N	
@@ -243,71 +310,4 @@ function G2_SAVE(token){
 			alog(error);
 		}
 	});
-}
-function G2_EDIT(){
-       alog("[FromView] G2_EDIT---------------start");
-	if( $("#G2-CTLCUD").val() == "C" ){
-		alert("조회 후 수정 가능합니다. 신규 모드에서는 수정할 수 없습니다.")
-		return;
-	}
-	if( $("#G2-CTLCUD").val() == "D" ){
-		alert("조회 후 수정 가능합니다. 삭제 모드에서는 수정할 수 없습니다.")
-		return;
-	}
-
-	$("#G2-CTLCUD").val("U");
-       alog("[FromView] G2_EDIT---------------end");
-}
-//디테일 검색	
-function G2_SEARCH(tinput,token){
-       alog("(FORMVIEW) G2_SEARCH---------------start");
-
-	//post 만들기
-	sendFormData = new FormData($("#condition")[0]);
-	var conAllData = "";
-	if(typeof tinput != "undefined" && tinput != null){
-		var tKeys = tinput.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],tinput.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ tinput.get(tKeys[i])); 
-		}
-	}
-
-	$.ajax({
-        type : "POST",
-        url : url_G2_SEARCH+"&TOKEN=" + token + "&" + conAllData ,
-        data : sendFormData,
-		processData: false,
-		contentType: false,
-        dataType: "json",
-        success: function(data){
-            alog(data);
-
-			if(data && data.RTN_CD == "200"){
-				if(data.RTN_DATA){
-					msgNotice("정상적으로 조회되었습니다.",1);
-				}else{
-					msgNotice("정상적으로 조회되었으나 데이터가 없습니다.",2);
-					return;
-				}
-			}else{
-				msgError("오류가 발생했습니다("+ data.ERR_CD + ")." + data.RTN_MSG,3);
-				return;
-			}
-
-            //모드 변경하기
-            $("#G2-CTLCUD").val("R");
-			//SETVAL  가져와서 세팅
-			$("#G2-USR_ID").val(data.RTN_DATA.USR_ID);//USR_ID 변수세팅
-			$("#G2-USR_SEQ").val(data.RTN_DATA.USR_SEQ);//USE_SEQ 변수세팅
-			$("#G2-USR_NM").val(data.RTN_DATA.USR_NM);//USR_NM 변수세팅
-			$("#G2-USR_PWD").val(data.RTN_DATA.USR_PWD);//USR_PWD 변수세팅
-        },
-        error: function(error){
-            alog("Error:");
-            alog(error);
-        }
-    });
-    alog("(FORMVIEW) G2_SEARCH---------------end");
-
 }

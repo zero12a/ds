@@ -577,78 +577,6 @@ function G3_HIDDENCOL(token){
 
 		alog("G3_HIDDENCOL-----------------end");
 	}
-//새로고침	
-function G3_RELOAD(token){
-  alog("G3_RELOAD-----------------start");
-  G3_SEARCH(lastinputG3,token);
-}
-//디펄트 보유 권한
-function G3_CHKDEL(token){
-	alog("G3_CHKDEL()------------start");
-
-
-	var allData = $$("wixdtG3").serialize(true);
-    alog(allData);
-
-
-    var chkData = _.filter(allData,['CHK','1']);
-    for(i=0;i<chkData.length;i++){
-        chkData[i].changeState = true;
-        chkData[i].changeCud = "deleted";
-    }
-    alog(chkData);
-    var myJsonString = JSON.stringify(chkData);
-	//get 만들기
-	sendFormData = new FormData();//빈 formdata만들기
-	var conAllData = $( "#condition" ).serialize();
-	//post 만들기
-	sendFormData = new FormData($("#condition")[0]);
-	var conAllData = "";
-	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG3 != "undefined" && lastinputG3 != null){
-		var tKeys = lastinputG3.keys();
-		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG3.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG3.get(tKeys[i])); 
-		}
-	}
-	//CHK 배열 합치기
-	allData = $$("wixdtG3").serialize(true);
-	//alog(allData);
-	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
-	sendFormData.append("G3-JSON",myJsonString);
-
-	$.ajax({
-		type : "POST",
-		url : url_G3_CHKDEL + "&TOKEN=" + token + "&" + conAllData,
-		data : sendFormData,
-		processData: false,
-		contentType: false,
-		dataType: "json",
-		async: false,
-		success: function(data){
-			alog("   json return----------------------");
-			alog("   json data : " + data);
-			alog("   json RTN_CD : " + data.RTN_CD);
-			alog("   json ERR_CD : " + data.ERR_CD);
-			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
-
-			//그리드에 데이터 반영
-			saveToGroup(data);
-
-		},
-		error: function(error){
-			msgError("Ajax http 500 error ( " + error + " )");
-			alog("Ajax http 500 error ( " + error + " )");
-		},
-		complete : function() {
-			G3_REQUEST_ON = false;
-		}
-
-	});
-	
-	alog("G3_CHKDEL()------------end");
-}
 //엑셀 다운받기 - 렌더링 후값인 NM (디펄트 보유 권한)
 function G3_EXD(tinput,token){
 	alog("G3_EXD()------------start");
@@ -670,7 +598,12 @@ function G3_EXD(tinput,token){
 
 
 	alog("G3_EXD()------------end");
-}//그리드 조회(디펄트 보유 권한)	
+}//새로고침	
+function G3_RELOAD(token){
+  alog("G3_RELOAD-----------------start");
+  G3_SEARCH(lastinputG3,token);
+}
+//그리드 조회(디펄트 보유 권한)	
 function G3_SEARCH(tinput,token){
 	alog("G3_SEARCH()------------start");
 
@@ -758,42 +691,45 @@ function G3_SEARCH(tinput,token){
         alog("G3_SEARCH()------------end");
     }
 
-//미보유 권한
-function G4_CHKSAVE(token){
-	alog("G4_CHKSAVE()------------start");
+//디펄트 보유 권한
+function G3_CHKDEL(token){
+	alog("G3_CHKDEL()------------start");
 
 
-	var allData = $$("wixdtG4").serialize(true);
+	var allData = $$("wixdtG3").serialize(true);
     alog(allData);
 
 
     var chkData = _.filter(allData,['CHK','1']);
     for(i=0;i<chkData.length;i++){
         chkData[i].changeState = true;
-        chkData[i].changeCud = "updated";
+        chkData[i].changeCud = "deleted";
     }
     alog(chkData);
     var myJsonString = JSON.stringify(chkData);
+	//get 만들기
+	sendFormData = new FormData();//빈 formdata만들기
+	var conAllData = $( "#condition" ).serialize();
 	//post 만들기
 	sendFormData = new FormData($("#condition")[0]);
 	var conAllData = "";
 	//상속받은거 전달할수 있게 합치기
-	if(typeof lastinputG4 != "undefined" && lastinputG4 != null){
-		var tKeys = lastinputG4.keys();
+	if(typeof lastinputG3 != "undefined" && lastinputG3 != null){
+		var tKeys = lastinputG3.keys();
 		for(i=0;i<tKeys.length;i++) {
-			sendFormData.append(tKeys[i],lastinputG4.get(tKeys[i]));
-			//console.log(tKeys[i]+ '='+ lastinputG4.get(tKeys[i])); 
+			sendFormData.append(tKeys[i],lastinputG3.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG3.get(tKeys[i])); 
 		}
 	}
 	//CHK 배열 합치기
-	allData = $$("wixdtG4").serialize(true);
+	allData = $$("wixdtG3").serialize(true);
 	//alog(allData);
 	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
-	sendFormData.append("G4-JSON",myJsonString);
+	sendFormData.append("G3-JSON",myJsonString);
 
 	$.ajax({
 		type : "POST",
-		url : url_G4_CHKSAVE + "&TOKEN=" + token + "&" + conAllData,
+		url : url_G3_CHKDEL + "&TOKEN=" + token + "&" + conAllData,
 		data : sendFormData,
 		processData: false,
 		contentType: false,
@@ -815,12 +751,17 @@ function G4_CHKSAVE(token){
 			alog("Ajax http 500 error ( " + error + " )");
 		},
 		complete : function() {
-			G4_REQUEST_ON = false;
+			G3_REQUEST_ON = false;
 		}
 
 	});
 	
-	alog("G4_CHKSAVE()------------end");
+	alog("G3_CHKDEL()------------end");
+}
+//새로고침	
+function G4_RELOAD(token){
+  alog("G4_RELOAD-----------------start");
+  G4_SEARCH(lastinputG4,token);
 }
 //그리드 조회(미보유 권한)	
 function G4_SEARCH(tinput,token){
@@ -910,6 +851,70 @@ function G4_SEARCH(tinput,token){
         alog("G4_SEARCH()------------end");
     }
 
+//미보유 권한
+function G4_CHKSAVE(token){
+	alog("G4_CHKSAVE()------------start");
+
+
+	var allData = $$("wixdtG4").serialize(true);
+    alog(allData);
+
+
+    var chkData = _.filter(allData,['CHK','1']);
+    for(i=0;i<chkData.length;i++){
+        chkData[i].changeState = true;
+        chkData[i].changeCud = "updated";
+    }
+    alog(chkData);
+    var myJsonString = JSON.stringify(chkData);
+	//post 만들기
+	sendFormData = new FormData($("#condition")[0]);
+	var conAllData = "";
+	//상속받은거 전달할수 있게 합치기
+	if(typeof lastinputG4 != "undefined" && lastinputG4 != null){
+		var tKeys = lastinputG4.keys();
+		for(i=0;i<tKeys.length;i++) {
+			sendFormData.append(tKeys[i],lastinputG4.get(tKeys[i]));
+			//console.log(tKeys[i]+ '='+ lastinputG4.get(tKeys[i])); 
+		}
+	}
+	//CHK 배열 합치기
+	allData = $$("wixdtG4").serialize(true);
+	//alog(allData);
+	var myJsonString = JSON.stringify(_.filter(allData,['changeState',true]));
+	sendFormData.append("G4-JSON",myJsonString);
+
+	$.ajax({
+		type : "POST",
+		url : url_G4_CHKSAVE + "&TOKEN=" + token + "&" + conAllData,
+		data : sendFormData,
+		processData: false,
+		contentType: false,
+		dataType: "json",
+		async: false,
+		success: function(data){
+			alog("   json return----------------------");
+			alog("   json data : " + data);
+			alog("   json RTN_CD : " + data.RTN_CD);
+			alog("   json ERR_CD : " + data.ERR_CD);
+			//alog("   json RTN_MSG length : " + data.RTN_MSG.length);
+
+			//그리드에 데이터 반영
+			saveToGroup(data);
+
+		},
+		error: function(error){
+			msgError("Ajax http 500 error ( " + error + " )");
+			alog("Ajax http 500 error ( " + error + " )");
+		},
+		complete : function() {
+			G4_REQUEST_ON = false;
+		}
+
+	});
+	
+	alog("G4_CHKSAVE()------------end");
+}
 //사용자정의함수 : V
 function G4_HIDDENCOL(token){
 	alog("G4_HIDDENCOL-----------------start");
@@ -922,8 +927,3 @@ function G4_HIDDENCOL(token){
 
 		alog("G4_HIDDENCOL-----------------end");
 	}
-//새로고침	
-function G4_RELOAD(token){
-  alog("G4_RELOAD-----------------start");
-  G4_SEARCH(lastinputG4,token);
-}

@@ -30,6 +30,8 @@ from
  CG_PJTINFO
 where DELYN = 'N'
 order by PJTORD asc
+
+
 ";
 		$RtnVal["PARENT_FNCTYPE"] = ""; // PSQLSEQ가 있으면 상위 SQL이 존재	
 		$RtnVal["REQUIRE"] = array(	);

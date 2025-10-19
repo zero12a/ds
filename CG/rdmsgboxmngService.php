@@ -67,7 +67,7 @@ class rdmsgboxmngService
 		echo json_encode($rtnVal);
 		$log->info("RDMSGBOXMNGService-goG1Save________________________end");
 	}
-	//수신목록, 조회
+	//수신목록1, 조회
 	public function goG2Search(){
 		global $REQ,$CFG,$_RTIME, $log;
 		$rtnVal = new stdclass();
@@ -81,7 +81,7 @@ class rdmsgboxmngService
 		$GRID["GRPTYPE"] = "GRID_WEBIX";
 		$GRID["KEYCOLIDX"] = ""; // KEY 컬럼
 		//조회
-		//V_GRPNM : 수신목록
+		//V_GRPNM : 수신목록1
 		array_push($GRID["SQL"], $this->DAO->selG($REQ)); //SEARCH, 조회,BOX
 		//암호화컬럼
 		$GRID["COLCRYPT"] = array();
@@ -102,7 +102,7 @@ class rdmsgboxmngService
 		echo json_encode($rtnVal);
 		$log->info("RDMSGBOXMNGService-goG2Search________________________end");
 	}
-	//수신목록, 저장
+	//수신목록1, 저장
 	public function goG2Save(){
 		global $REQ,$CFG,$_RTIME, $log;
 		$rtnVal = new stdclass();
@@ -121,9 +121,9 @@ class rdmsgboxmngService
 		$GRID["COLCRYPT"] = array();	
 		$GRID["KEYCOLID"] = "";  //KEY컬럼
 		$GRID["SEQYN"] = "N";  //시퀀스 컬럼 유무
-		//V_GRPNM : 수신목록
+		//V_GRPNM : 수신목록1
 		array_push($GRID["SQL"]["U"], $this->DAO->updG($REQ)); //SAVE, 저장,BOX
-		//V_GRPNM : 수신목록
+		//V_GRPNM : 수신목록1
 		array_push($GRID["SQL"]["D"], $this->DAO->delG($REQ)); //SAVE, 저장,BOX
 		$tmpVal = requireGridwixSaveArray($GRID["COLORD"],$GRID["JSON"],$GRID["SQL"]);
 		if($tmpVal->RTN_CD == "500"){
@@ -146,7 +146,7 @@ class rdmsgboxmngService
 		echo json_encode($rtnVal);
 		$log->info("RDMSGBOXMNGService-goG2Save________________________end");
 	}
-	//수신목록, 선택삭제
+	//수신목록1, 선택삭제
 	public function goG2Chkupd(){
 		global $REQ,$CFG,$_RTIME, $log;
 		$rtnVal = new stdclass();
@@ -165,7 +165,7 @@ class rdmsgboxmngService
 		$GRID["COLCRYPT"] = array();
 		$GRID["KEYCOLID"] = "";  //KEY컬럼
 		$GRID["SEQYN"] = "";  //시퀀스 컬럼 유무
-		//V_GRPNM : 수신목록
+		//V_GRPNM : 수신목록1
 		array_push($GRID["SQL"]["D"], $this->DAO->delG($REQ)); //CHKUPD, 선택삭제,BOX
 		$tmpVal = requireGridwixSaveArray($GRID["COLORD"],$GRID["JSON"],$GRID["SQL"]);
 		if($tmpVal->RTN_CD == "500"){
